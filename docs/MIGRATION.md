@@ -171,6 +171,35 @@ mv ~/Documents/BMAD-Setup ~/Documents/BMAD-Setup-archived
 | N/A | `/bmad:bmad-tdd` (TDD enforcement) |
 | N/A | `/bmad:bmad` (status dashboard) |
 
+## What Changes (v0.8.0 — Guardrails Enhancement)
+
+### Self-Verification Protocol
+
+Fork-context roles (bmad-arch, bmad-impl, bmad-qa) now verify their output against upstream artifacts before handoff. Each role appends a **Traceability** section to its output document showing coverage of upstream requirements.
+
+- **Enabled by default** — no action required
+- **Disable per-project**: add `guardrails.self_check: false` to your `config.yaml`
+- **Graceful degradation**: if upstream artifacts don't exist, self-verification is silently skipped
+
+### validate-prd Default Changed
+
+The greenfield workflow now defaults PRD Validation to **enabled** (previously disabled). When starting a new greenfield workflow, PRD Validation will be suggested as default-on.
+
+- **No action required** — you can still opt out during greenfield setup
+- **Existing configs preserved**: if your `config.yaml` has `validate_prd: false`, it takes precedence
+
+### New Config Option
+
+```yaml
+# Add to your config.yaml if you want to disable self-verification
+guardrails:
+  self_check: false
+```
+
+### New Resource File
+
+`plugin/resources/guardrails.md` — defines the self-verification protocol. Roles read this at runtime alongside `soul.md`.
+
 ## Key Improvements After Migration
 
 1. **Real isolation**: Each role runs in its own context — no context pollution between phases

@@ -42,6 +42,7 @@ Read from `~/.claude/bmad/projects/{project}/output/`:
 - Architecture: `arch/architecture.md`
 - Implementation notes: `impl/implementation-notes-*.md`
 - If requirements missing: "Requirements needed for test planning. Run `/bmad-scope` first."
+- **Upstream for self-verification**: `scope/requirements.md` or `prioritize/PRD.md` (loaded before handoff if guardrails enabled)
 
 ## Domain-Specific Behavior
 
@@ -287,13 +288,15 @@ Run when invoked with `/bmad:bmad-qa lint`. Validates internal consistency of th
       - `tdd.enforcement: hard` (default) + any FAIL → verdict = **REJECT** (P0: TDD cycle violated)
       - `tdd.enforcement: soft` + any FAIL → add P1 warning, do not override existing verdict
 
-6. **Save** to `~/.claude/bmad/projects/$PROJECT_NAME/output/qa/test-report-{date}.md`
+6. **Self-Verification**: Read and follow the self-verification protocol in `${CLAUDE_PLUGIN_ROOT}/resources/guardrails.md`. Upstream artifact: `scope/requirements.md` or `prioritize/PRD.md`.
 
-7. **MCP Integration** (if available):
+7. **Save** to `~/.claude/bmad/projects/$PROJECT_NAME/output/qa/test-report-{date}.md`
+
+8. **MCP Integration** (if available):
    - **Linear**: Link test results to issues, comment on verification outcomes
    - **claude-mem**: Search for past test patterns. Save test strategy decisions at completion.
 
-8. **Handoff**:
+9. **Handoff**:
    > **Quality Guardian — Complete.**
    > Verdict: **{PASS/CONDITIONAL PASS/REJECT}**
    > Output saved to: `~/.claude/bmad/projects/{project}/output/qa/`

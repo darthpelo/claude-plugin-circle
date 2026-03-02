@@ -45,6 +45,7 @@ Read requirements from `~/.claude/bmad/projects/{project}/output/`:
 Also check for project config: `~/.claude/bmad/projects/{project}/config.yaml`
 - If `extra_instructions` for bmad-arch exists, incorporate them
 - If `context_files` defined, read those files for additional architectural context
+- **Upstream for self-verification**: `scope/requirements.md` or `prioritize/PRD.md` (loaded before handoff if guardrails enabled)
 
 ## Domain-Specific Behavior
 
@@ -103,12 +104,14 @@ These are suggestions, not blocks — proceed with or without them. If a suggest
 
 6. **Generate architecture document**: Write to `~/.claude/bmad/projects/$PROJECT_NAME/output/arch/{filename}`
 
-7. **MCP Integration** (if available):
+7. **Self-Verification**: Read and follow the self-verification protocol in `${CLAUDE_PLUGIN_ROOT}/resources/guardrails.md`. Upstream artifact: `scope/requirements.md` or `prioritize/PRD.md`.
+
+8. **MCP Integration** (if available):
    - **Domain-specific tools**: If domain-specific MCP tools are available (configured via deps-manifest.yaml), use them to look up framework documentation and platform best practices.
    - **Linear**: Reference project context and link architecture decisions to issues
    - **claude-mem**: Search for past architectural decisions in similar projects. Save key ADRs at completion.
 
-8. **Handoff**:
+9. **Handoff**:
    > **Architecture Owner — Complete.**
    > Output saved to: `~/.claude/bmad/projects/{project}/output/arch/{filename}`
    > ADRs documented: {count}

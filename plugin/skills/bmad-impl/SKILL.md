@@ -45,6 +45,7 @@ Read design from `~/.claude/bmad/projects/{project}/output/`:
 Also check for project config: `~/.claude/bmad/projects/{project}/config.yaml`
 - If `context_files` defined, read those for additional context
 - If `extra_instructions` for bmad-impl exists, incorporate them
+- **Upstream for self-verification**: `arch/architecture.md` (loaded before handoff if guardrails enabled)
 
 ## Progressive Disclosure (Context Sharding)
 
@@ -109,14 +110,16 @@ These are suggestions, not blocks — proceed with or without them. If a suggest
 
 7. **CLAUDE.md compliance**: If a `CLAUDE.md` exists in the repo root, verify your implementation follows its standards before handoff.
 
-8. **Save implementation notes** to: `~/.claude/bmad/projects/$PROJECT_NAME/output/impl/implementation-notes-{date}.md`
+8. **Self-Verification**: Read and follow the self-verification protocol in `${CLAUDE_PLUGIN_ROOT}/resources/guardrails.md`. Upstream artifact: `arch/architecture.md`.
 
-9. **MCP Integration** (if available):
-   - **Domain-specific tools**: If domain-specific MCP tools are available (configured via deps-manifest.yaml), use them to look up framework documentation and platform best practices.
-   - **Linear**: Update issue status, comment on implementation progress
-   - **claude-mem**: Search for past implementation patterns. Save key decisions at completion.
+9. **Save implementation notes** to: `~/.claude/bmad/projects/$PROJECT_NAME/output/impl/implementation-notes-{date}.md`
 
-10. **Handoff**:
+10. **MCP Integration** (if available):
+    - **Domain-specific tools**: If domain-specific MCP tools are available (configured via deps-manifest.yaml), use them to look up framework documentation and platform best practices.
+    - **Linear**: Update issue status, comment on implementation progress
+    - **claude-mem**: Search for past implementation patterns. Save key decisions at completion.
+
+11. **Handoff**:
    > **Implementer — Complete.**
    > Output saved to: `~/.claude/bmad/projects/{project}/output/impl/`
    > Next suggested role: `/bmad:bmad-qa` for testing and validation.

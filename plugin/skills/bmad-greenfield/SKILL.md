@@ -109,9 +109,9 @@ Domain: {detected domain}
 Mandatory phases: Security Review (always included)
 
 Optional phases:
-1. PRD Validation — Include? [y/n]
-2. Experience Designer (UX Design) — Include? [y/n]
-3. Facilitator (Sprint Planning) — Include? [y/n]
+1. Experience Designer (UX Design) — Include? [y/n]
+2. Facilitator (Sprint Planning) — Include? [y/n]
+3. PRD Validation — Include? [Y/n]
 ```
 
 **Generate step sequence** based on selections.
