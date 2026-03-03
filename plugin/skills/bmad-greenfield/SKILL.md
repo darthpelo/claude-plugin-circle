@@ -191,14 +191,14 @@ After completion, type one of:
 | Step | Role | Model | Purpose | Input | Output |
 |---|---|---|---|---|---|
 | 1 | **Scope Clarifier** | sonnet | Gather requirements | User description | `scope/requirements.md` |
-| 2 | **Prioritizer** | sonnet | Prioritize & create PRD | Requirements | `prioritize/PRD.md` |
+| 2 | **Prioritizer** | sonnet | Prioritize & create PRD | Requirements | `prioritize/PRD-{date}.md` |
 | 3* | **PRD Validator** | sonnet | Validate PRD quality | PRD + Requirements | `qa/prd-validation-report.md` |
 | 4* | **Experience Designer** | sonnet | Design UX | PRD | `ux/ux-design.md` |
 | 5 | **Architecture Owner** | opus | Design architecture | PRD + UX (if available) | `arch/architecture.md` |
 | 6 | **Security Guardian** | opus | Security audit | Architecture | `security/security-audit.md` |
 | 7* | **Facilitator** | haiku | Sprint planning | PRD + Architecture | `facilitate/sprint-plan.md` |
 | 8 | **Implementer** | opus | Implement | Architecture + PRD | Code in repo |
-| 9 | **Quality Guardian** | sonnet | Test & validate | Requirements + Code | `qa/test-report.md` |
+| 9 | **Quality Guardian** | sonnet | Test & validate | Requirements + Code | `qa/test-report-{date}.md` |
 
 *Optional steps
 
@@ -268,9 +268,10 @@ Completed:
 
 ### Gate 0: PRD Validation Block
 
-After the validate-prd step (if included):
-1. Read `$BASE/output/qa/prd-validation-report.md`
-2. If verdict is "NEEDS REVISION":
+After the validate-prd step:
+1. If `validate_prd` is `false` in `session-state.json` optional_phases (step was skipped): skip this gate entirely and advance to the next step.
+2. Read `$BASE/output/qa/prd-validation-report.md`
+3. If verdict is "NEEDS REVISION":
    ```
    PRD VALIDATION GATE FAILED
    The PRD Validator found blocking issues.
@@ -279,8 +280,8 @@ After the validate-prd step (if included):
 
    Fix the issues with /bmad:bmad-prioritize, then re-run /bmad:bmad-validate-prd.
    ```
-3. Update `session-state.json` with `current_step: "prioritize"` and add a checkpoint entry, then loop back to the prioritize step
-4. If PASS or PASS with notes: advance to next step (ux or arch)
+4. Update `session-state.json` with `current_step: "prioritize"` and add a checkpoint entry, then loop back to the prioritize step
+5. If PASS or PASS with notes: advance to next step (ux or arch)
 
 ### Gate 1: Security P0 Block
 

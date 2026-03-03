@@ -38,13 +38,13 @@ Detect the project domain by analyzing files in the current directory:
 ## Input Prerequisites
 
 Read from `~/.claude/bmad/projects/{project}/output/`:
-- **Required**: `prioritize/PRD.md` — the PRD to validate
+- **Required**: resolve the PRD from `prioritize/` as follows:
+  - If `$ARGUMENTS` is **not** provided: select the most recent `PRD-*.md` file (by modification time). If none exist, fall back to `PRD.md` if present.
+  - If `$ARGUMENTS` **is** provided: use only its basename component as the PRD filename (strip any path separators and `..` segments). Do not allow path traversal — only filenames under `prioritize/` are allowed.
 - **Optional**: `scope/requirements.md` — enables requirements coverage check
 - **Reference**: `${CLAUDE_PLUGIN_ROOT}/resources/templates/software/PRD.md` — template for completeness check
 
-If `$ARGUMENTS` is provided and is not empty, use only its basename component as the PRD filename (strip any path separators and `..` segments). Do not allow path traversal.
-
-If PRD is missing: "PRD not found. Run `/bmad:bmad-prioritize` first to create a PRD."
+If PRD is missing after applying the discovery rules above: "PRD not found. Run `/bmad:bmad-prioritize` first to create a PRD."
 
 ## Process
 
