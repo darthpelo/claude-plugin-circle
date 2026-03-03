@@ -19,7 +19,7 @@ plugin/resources/deps-manifest.yaml    # Dependency registry (source of truth)
 plugin/resources/scripts/              # install-deps.sh, update-deps.sh
 plugin/resources/templates/{docs,software}/ # Output templates
 plugin/skills/bmad-*/SKILL.md          # 17 skills (see ls)
-docs/                                  # CUSTOMIZATION.md, GETTING-STARTED.md, MIGRATION.md
+docs/                                  # CHANGELOG.md, CUSTOMIZATION.md, GETTING-STARTED.md
 ```
 
 ## Rules
@@ -34,7 +34,7 @@ docs/                                  # CUSTOMIZATION.md, GETTING-STARTED.md, M
 
 **Scripts mirror manifest**: `install-deps.sh` and `update-deps.sh` have hardcoded arrays — they do NOT parse `deps-manifest.yaml`. Any dep change must update both scripts AND the manifest.
 
-**Version bump**: After feature work, update version in `plugin.json`. After merge, sync `marketplace.json` AND Luscii/claude-marketplace. Three places must match.
+**Version bump**: After feature work, update version in `plugin.json` and add a release entry to `docs/CHANGELOG.md`. After merge, sync `marketplace.json` AND Luscii/claude-marketplace. Three places must match.
 
 **Workflow order**: arch → security (P0 blocks impl) → impl (simplicity assessment first) → qa (coherence check + REJECT loops to impl) → commit → push → PR → code-review. Never suggest `/bmad-code-review` before a PR exists.
 
@@ -49,4 +49,3 @@ docs/                                  # CUSTOMIZATION.md, GETTING-STARTED.md, M
 - **Marketplace frontmatter**: Only `name`, `description`, `allowed-tools`, `compatibility`, `license`, `metadata` allowed as top-level fields. `context`/`agent` go inside `metadata:`
 - **marketplace.json vs plugin.json**: Different files, different locations (root `.claude-plugin/` vs `plugin/.claude-plugin/`), different purposes
 - **Do not neutralize**: `deps-manifest.yaml`, `bmad-init`, `bmad-triage` contain domain-specific content by design
-- **MIGRATION.md**: Contains intentional persona names (Mary, Winston) for migration mapping
