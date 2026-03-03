@@ -227,6 +227,6 @@ Implementer (implement) → Quality Guardian (test) → Code Review (multi-agent
 
 The team principles live in `plugin/resources/soul.md` — every role reads them on every invocation. To understand the culture behind BMAD, start there.
 
-## Migration from BMAD-Setup
+## Changelog
 
-See [docs/MIGRATION.md](docs/MIGRATION.md).
+See [docs/CHANGELOG.md](docs/CHANGELOG.md).

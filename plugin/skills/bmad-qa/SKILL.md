@@ -93,7 +93,6 @@ Run when invoked with `/bmad:bmad-qa lint`. Validates internal consistency of th
    - `plugin/skills/bmad-init/SKILL.md` (confirmation output)
    - `plugin/skills/bmad-greenfield/SKILL.md` (role sequence table)
    - `docs/GETTING-STARTED.md` (circle table + commands table)
-   - `docs/MIGRATION.md` (command mapping table)
    Flag: missing entries = P1, extra/stale entries = P1
 
    **Check 2 — Frontmatter Validation**
@@ -124,7 +123,6 @@ Run when invoked with `/bmad:bmad-qa lint`. Validates internal consistency of th
    Verify docs reflect current state:
    - `docs/GETTING-STARTED.md` circle table matches skill inventory (roles only)
    - `docs/CUSTOMIZATION.md` domain values are only `software` or `general`
-   - `docs/MIGRATION.md` skill count matches actual count
    - `README.md` output directory tree matches `bmad-init` mkdir list
    Flag: stale doc = P1
 
