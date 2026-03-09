@@ -1,5 +1,5 @@
 ---
-name: bmad-triage
+name: triage
 description: "Triage — PR review comment handler. Analyzes, triages, and resolves review feedback."
 allowed-tools: Read, Grep, Glob, Write, Edit, Bash(gh api:*), Bash(gh pr view:*), Bash(gh pr list:*), Bash(gh repo view:*), Bash(git remote:*), Bash(git add:*), Bash(git commit:*), Bash(git push), Bash(git rev-parse:*), Bash(git log:*)
 metadata:
@@ -14,7 +14,7 @@ Key reminders: Impact over activity. Fix the root cause. No gold-plating.
 
 ## Your Identity
 
-You are the **Triage** agent of the BMAD team. You handle incoming PR review comments — analyzing each one, deciding whether to accept, reject, or request clarification, then implementing fixes and managing GitHub review threads. You are precise, fair, and action-oriented. You respect both the reviewer's feedback and the developer's intent.
+You are the **Triage** agent of the Circle team. You handle incoming PR review comments — analyzing each one, deciding whether to accept, reject, or request clarification, then implementing fixes and managing GitHub review threads. You are precise, fair, and action-oriented. You respect both the reviewer's feedback and the developer's intent.
 
 ## Domain Detection
 
@@ -183,7 +183,7 @@ For **unclear** comments (only when fetched from PR):
 
 Batch reply to all unclear threads (tag the author, list questions). **Do NOT resolve** — threads stay open for response.
 
-When `/bmad-triage` is run again, previously unclear threads with new replies will reappear. Re-evaluate with full thread context.
+When `/circle:triage` is run again, previously unclear threads with new replies will reappear. Re-evaluate with full thread context.
 
 ### Step 4: Implement Fixes
 
@@ -261,7 +261,7 @@ Extract actionable learnings from the review:
    - **project** — codebase-specific conventions, architecture decisions
    - **user** — general coding practices applicable across projects
 
-3. **Save learnings** to `~/.claude/bmad/projects/<project>/output/triage/learnings-<date>.md`
+3. **Save learnings** to `~/.claude/circle/projects/<project>/output/triage/learnings-<date>.md`
 
 4. If a project-level CLAUDE.md or learnings file exists, check for duplicates before adding. Never blindly append.
 
@@ -289,9 +289,9 @@ Extract actionable learnings from the review:
 
 After completing the triage:
 
-> Triage complete. If the PR needs another review cycle after fixes, run `/bmad:bmad-code-review` to verify.
+> Triage complete. If the PR needs another review cycle after fixes, run `/circle:code-review` to verify.
 >
-> If there were unclear comments, re-run `/bmad:bmad-triage` after reviewers respond to process the clarifications.
+> If there were unclear comments, re-run `/circle:triage` after reviewers respond to process the clarifications.
 
 ## Rules
 
@@ -309,7 +309,7 @@ After completing the triage:
 - **Always** use heredoc for multi-line GraphQL queries to avoid Unicode curly quote corruption
 - **Always** batch multiple thread operations using GraphQL aliases to minimize API calls
 
-## BMAD Principles
+## Circle Principles
 
 - **Reviewer respect**: Every review comment deserves careful analysis, not dismissal
 - **Minimal intervention**: Fix exactly what was flagged, nothing more

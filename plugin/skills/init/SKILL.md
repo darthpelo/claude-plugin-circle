@@ -1,15 +1,15 @@
 ---
-name: bmad-init
-description: Initialize BMAD framework for the current project. Creates output directories in home folder (zero project footprint). Checks and installs optional dependencies. Run once per project.
+name: init
+description: Initialize Circle framework for the current project. Creates output directories in home folder (zero project footprint). Checks and installs optional dependencies. Run once per project.
 allowed-tools: Read, Grep, Glob, Bash
 metadata:
   context: same
   agent: general-purpose
 ---
 
-# BMAD Init
+# Circle Init
 
-Initialize the BMAD-METHOD framework for the current project. All outputs are stored externally in the home directory — nothing is added to the project repository.
+Initialize the Circle-METHOD framework for the current project. All outputs are stored externally in the home directory — nothing is added to the project repository.
 
 ## Process
 
@@ -28,11 +28,11 @@ Auto-detect relevant groups:
 - `ios` — relevant if domain is software AND (`Package.swift` or `*.xcodeproj` exists)
 - `extras` — always shown, marked as optional
 
-Check for project-level overrides in `~/.claude/bmad/projects/$PROJECT_NAME/config.yaml` under the `dependencies:` key. If a dep is marked `skip`, exclude it. If marked `include`, add it.
+Check for project-level overrides in `~/.claude/circle/projects/$PROJECT_NAME/config.yaml` under the `dependencies:` key. If a dep is marked `skip`, exclude it. If marked `include`, add it.
 
 **Display dependency status table:**
 ```
-BMAD Dependencies
+Circle Dependencies
 ==================
 
   Core (recommended for all teams):
@@ -113,7 +113,7 @@ Toggle dependencies (enter numbers, comma-separated):
 Enter numbers to toggle, or 'done':
 ```
 
-After selection, save preferences to `~/.claude/bmad/projects/$PROJECT_NAME/config.yaml` under the `dependencies:` key. Then install selected deps.
+After selection, save preferences to `~/.claude/circle/projects/$PROJECT_NAME/config.yaml` under the `dependencies:` key. Then install selected deps.
 
 If all dependencies are already installed, skip the choice prompt and show:
 ```
@@ -135,7 +135,7 @@ Analyze files in the current directory:
 Zero footprint — all in home directory:
 ```bash
 PROJECT_NAME=$(basename "$PWD" | tr '[:upper:]' '[:lower:]')
-BASE=~/.claude/bmad/projects/$PROJECT_NAME
+BASE=~/.claude/circle/projects/$PROJECT_NAME
 
 mkdir -p $BASE/output/{scope,arch,impl,qa,security,ux,prioritize,facilitate,docs,code-review,triage}
 mkdir -p $BASE/shards/{requirements,architecture,stories}
@@ -144,7 +144,7 @@ mkdir -p $BASE/workspace
 
 ### 4. Create session state
 
-Write to `~/.claude/bmad/projects/$PROJECT_NAME/output/session-state.json`:
+Write to `~/.claude/circle/projects/$PROJECT_NAME/output/session-state.json`:
 ```json
 {
   "project": "<project-name>",
@@ -164,21 +164,21 @@ Write to `~/.claude/bmad/projects/$PROJECT_NAME/output/session-state.json`:
 
 ### 5. Check for project config
 
-- If `~/.claude/bmad/projects/$PROJECT_NAME/config.yaml` exists, report it
+- If `~/.claude/circle/projects/$PROJECT_NAME/config.yaml` exists, report it
 - If not, search for a config template in the repo:
-  - Check: `docs/bmad/config.yaml`, `Docs/bmad/config.yaml`, `.bmad/config.yaml`
-  - If found: copy it to `~/.claude/bmad/projects/$PROJECT_NAME/config.yaml` and report:
+  - Check: `docs/circle/config.yaml`, `Docs/circle/config.yaml`, `.circle/config.yaml`
+  - If found: copy it to `~/.claude/circle/projects/$PROJECT_NAME/config.yaml` and report:
     ```
-    Found project BMAD config template at <path>. Copied to ~/.claude/bmad/projects/<project>/config.yaml
+    Found project Circle config template at <path>. Copied to ~/.claude/circle/projects/<project>/config.yaml
     ```
-  - If not found: suggest: "Create `~/.claude/bmad/projects/$PROJECT_NAME/config.yaml` for project-specific customization."
+  - If not found: suggest: "Create `~/.claude/circle/projects/$PROJECT_NAME/config.yaml` for project-specific customization."
 
 ### 6. Confirm
 
 ```
-BMAD initialized for: <project-name>
+Circle initialized for: <project-name>
 Domain: <detected-domain>
-Output: ~/.claude/bmad/projects/<project-name>/output/
+Output: ~/.claude/circle/projects/<project-name>/output/
 
 Dependencies:
   <summary of installed/missing from deps-manifest.yaml check>
@@ -186,29 +186,29 @@ Dependencies:
   Update all:      bash <plugin-root>/resources/scripts/update-deps.sh
 
 Available roles:
-  /bmad:bmad-scope       - Scope Clarifier (requirements, user stories)
-  /bmad:bmad-arch        - Architecture Owner (design, ADRs, trade-offs)
-  /bmad:bmad-impl        - Implementer (implementation, code review)
-  /bmad:bmad-qa          - Quality Guardian (test strategy, QA)
-  /bmad:bmad-ux          - Experience Designer (UI/UX design)
-  /bmad:bmad-prioritize  - Prioritizer (prioritization, roadmap)
-  /bmad:bmad-facilitate  - Facilitator (cycle planning, coordination)
-  /bmad:bmad-security    - Security Guardian (audits, threat modeling)
-  /bmad:bmad-docs        - Documentation Steward (doc generation)
+  /circle:scope       - Scope Clarifier (requirements, user stories)
+  /circle:arch        - Architecture Owner (design, ADRs, trade-offs)
+  /circle:impl        - Implementer (implementation, code review)
+  /circle:qa          - Quality Guardian (test strategy, QA)
+  /circle:ux          - Experience Designer (UI/UX design)
+  /circle:prioritize  - Prioritizer (prioritization, roadmap)
+  /circle:facilitate  - Facilitator (cycle planning, coordination)
+  /circle:security    - Security Guardian (audits, threat modeling)
+  /circle:docs        - Documentation Steward (doc generation)
 
 Review:
-  /bmad:bmad-code-review - Multi-agent PR code review with CLAUDE.md compliance
-  /bmad:bmad-triage      - Triage PR review comments
+  /circle:code-review - Multi-agent PR code review with CLAUDE.md compliance
+  /circle:triage      - Triage PR review comments
 
 Orchestrators:
-  /bmad:bmad-greenfield - Full workflow (analysis → QA)
-  /bmad:bmad-cycle      - Cycle planning ceremony (Shape Up)
+  /circle:greenfield - Full workflow (analysis → QA)
+  /circle:cycle      - Cycle planning ceremony (Shape Up)
 
 Utilities:
-  /bmad:bmad-validate-prd - Validate PRD quality (8 checks)
-  /bmad:bmad-tdd          - TDD red-green-refactor cycle
-  /bmad:bmad-shard        - Split large documents into shards
-  /bmad:bmad-init         - Project initialization (already done)
+  /circle:validate-prd - Validate PRD quality (8 checks)
+  /circle:tdd          - TDD red-green-refactor cycle
+  /circle:shard        - Split large documents into shards
+  /circle:init         - Project initialization (already done)
 
-Start with: /bmad:bmad-scope to gather requirements, or /bmad:bmad-greenfield for the full workflow.
+Start with: /circle:scope to gather requirements, or /circle:greenfield for the full workflow.
 ```

@@ -1,5 +1,5 @@
 ---
-name: bmad-shard
+name: shard
 description: Splits large documents (PRD, architecture) into atomic shards for context management. Reduces token usage by 90%. Use when PRD or architecture exceeds 3000 tokens.
 allowed-tools: Read, Write, Grep, Glob, Bash
 metadata:
@@ -7,9 +7,9 @@ metadata:
   agent: general-purpose
 ---
 
-# BMAD Document Sharding
+# Circle Document Sharding
 
-Implements BMAD context sharding: splits large documents into atomic story files that roles can load individually, dramatically reducing token usage.
+Implements Circle context sharding: splits large documents into atomic story files that roles can load individually, dramatically reducing token usage.
 
 ## Why Sharding Matters
 
@@ -21,7 +21,7 @@ When the Implementer works on STORY-001, it doesn't need to load the entire PRD.
 
 ## Input
 
-Automatically detect documents to shard in `~/.claude/bmad/projects/{project}/output/`:
+Automatically detect documents to shard in `~/.claude/circle/projects/{project}/output/`:
 
 | Source | Path |
 |---|---|
@@ -29,14 +29,14 @@ Automatically detect documents to shard in `~/.claude/bmad/projects/{project}/ou
 | Architecture | `arch/architecture.md` |
 | Requirements | `scope/requirements.md` |
 
-If no documents found: "No documents to shard. Run `/bmad:bmad-prioritize` or `/bmad:bmad-scope` first."
+If no documents found: "No documents to shard. Run `/circle:prioritize` or `/circle:scope` first."
 
 ## Process
 
 1. **Derive project paths**:
    ```bash
    PROJECT_NAME=$(basename "$PWD" | tr '[:upper:]' '[:lower:]')
-   BASE=~/.claude/bmad/projects/$PROJECT_NAME
+   BASE=~/.claude/circle/projects/$PROJECT_NAME
    mkdir -p $BASE/shards/{requirements,architecture,stories}
    ```
 
@@ -132,13 +132,13 @@ If no documents found: "No documents to shard. Run `/bmad:bmad-prioritize` or `/
    ```
    Sharding Complete
    =================
-   Requirements: 8 shards → ~/.claude/bmad/projects/{project}/shards/requirements/
-   Architecture: 4 shards → ~/.claude/bmad/projects/{project}/shards/architecture/
-   Stories:      6 shards → ~/.claude/bmad/projects/{project}/shards/stories/
+   Requirements: 8 shards → ~/.claude/circle/projects/{project}/shards/requirements/
+   Architecture: 4 shards → ~/.claude/circle/projects/{project}/shards/architecture/
+   Stories:      6 shards → ~/.claude/circle/projects/{project}/shards/stories/
 
    Usage:
-   /bmad:bmad-impl STORY-001    ← Implements only STORY-001
-   /bmad:bmad-impl STORY-002    ← Implements only STORY-002
+   /circle:impl STORY-001    ← Implements only STORY-001
+   /circle:impl STORY-002    ← Implements only STORY-002
 
    Each invocation loads only the relevant shard (~300 tokens instead of ~5000).
    ```
@@ -147,15 +147,15 @@ If no documents found: "No documents to shard. Run `/bmad:bmad-prioritize` or `/
 
 ```bash
 # The Implementer works on only STORY-001
-/bmad:bmad-impl STORY-001
+/circle:impl STORY-001
 
 # It will read ONLY:
-# - ~/.claude/bmad/projects/{project}/shards/stories/STORY-001.md
+# - ~/.claude/circle/projects/{project}/shards/stories/STORY-001.md
 # - Any dependencies referenced in the shard (loaded on demand)
 # - NOT: other stories, full PRD, future tasks
 ```
 
-## BMAD Principles
+## Circle Principles
 - Progressive disclosure: show only what's needed for the current task
 - Token efficiency: every token saved is context preserved for reasoning
 - Atomic units: each shard is self-contained with declared dependencies

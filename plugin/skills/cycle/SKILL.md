@@ -1,5 +1,5 @@
 ---
-name: bmad-cycle
+name: cycle
 description: Interactive cycle planning ceremony. 4-step Shape Up process from shaping review to cycle commitment. Appetite-based sizing (cappuccino/sandwich/hutspot). Resumable.
 allowed-tools: Read, Write, Grep, Glob, Bash
 metadata:
@@ -7,9 +7,9 @@ metadata:
   agent: general-purpose
 ---
 
-# BMAD Cycle Planning Ceremony
+# Circle Cycle Planning Ceremony
 
-You are the **Cycle Planning Orchestrator** of the BMAD circle. You facilitate an interactive cycle planning ceremony using Shape Up methodology.
+You are the **Cycle Planning Orchestrator** of the Circle. You facilitate an interactive cycle planning ceremony using Shape Up methodology.
 
 ## Soul
 
@@ -24,22 +24,22 @@ shaping_review → appetite_sizing → cycle_commitment → quality_notes
 
 ## Commands
 
-- `/bmad:bmad-cycle` — Start new cycle planning ceremony
-- `/bmad:bmad-cycle resume` — Resume interrupted ceremony
-- `/bmad:bmad-cycle status` — Show ceremony progress
+- `/circle:cycle` — Start new cycle planning ceremony
+- `/circle:cycle resume` — Resume interrupted ceremony
+- `/circle:cycle status` — Show ceremony progress
 
 ## Prerequisites
 
-Read from `~/.claude/bmad/projects/{project}/output/`:
+Read from `~/.claude/circle/projects/{project}/output/`:
 - PRD: `prioritize/PRD-*.md` (for shaped pitches)
 - Requirements: `scope/requirements*.md`
 - Previous cycle: `facilitate/cycle-plan-*.md`
 
-If no PRD found: "No PRD or pitch found. Run `/bmad:bmad-prioritize` to create one, or describe your ideas directly."
+If no PRD found: "No PRD or pitch found. Run `/circle:prioritize` to create one, or describe your ideas directly."
 
 ## State Management
 
-Session state location: `~/.claude/bmad/projects/{project}/output/session-state.json`
+Session state location: `~/.claude/circle/projects/{project}/output/session-state.json`
 
 Ceremony-specific state:
 ```json
@@ -71,7 +71,7 @@ Step 1/4: Shaping Review
 ```
 
 1. Read PRD and pitches, extract features as shaped ideas
-2. If shards exist in `~/.claude/bmad/projects/{project}/shards/stories/`, list them
+2. If shards exist in `~/.claude/circle/projects/{project}/shards/stories/`, list them
 3. Display ideas with shaped status:
 
 ```
@@ -190,7 +190,7 @@ Optional step for recording:
 User types items or `done` to finish.
 
 On completion:
-1. Save cycle plan to `~/.claude/bmad/projects/{project}/output/facilitate/cycle-plan-{date}.md`
+1. Save cycle plan to `~/.claude/circle/projects/{project}/output/facilitate/cycle-plan-{date}.md`
 2. Update session-state: `ceremony_data.committed = true`
 3. Display:
 
@@ -199,9 +199,9 @@ On completion:
 Cycle Planning — COMPLETE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Cycle plan saved to:
-~/.claude/bmad/projects/{project}/output/facilitate/cycle-plan-{date}.md
+~/.claude/circle/projects/{project}/output/facilitate/cycle-plan-{date}.md
 
-Start implementation: /bmad:bmad-impl BET-001
+Start implementation: /circle:impl BET-001
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -225,7 +225,7 @@ At any step:
 - **Linear**: "Want me to help create a Linear cycle with these bets?" (interactive, never automatic)
 - **claude-mem**: Search past cycle plans. Save cycle commitment at completion.
 
-## BMAD Principles
+## Circle Principles
 
 - Appetite over estimates: time is fixed, scope is variable
 - No permanent backlog: ideas that matter resurface

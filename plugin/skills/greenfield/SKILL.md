@@ -1,5 +1,5 @@
 ---
-name: bmad-greenfield
+name: greenfield
 description: Orchestrates full greenfield workflow (init → Scope Clarifier → Prioritizer → PRD Validator → Experience Designer → Architecture Owner → Security → Facilitator → Implementer → Quality Guardian). Interactive with human checkpoints at each phase. Optional phases (PRD Validator, Experience Designer, Facilitator). Resumable from any checkpoint.
 allowed-tools: Read, Write, Grep, Glob, Bash
 metadata:
@@ -7,9 +7,9 @@ metadata:
   agent: general-purpose
 ---
 
-# BMAD Greenfield Workflow Orchestrator
+# Circle Greenfield Workflow Orchestrator
 
-You are the **Greenfield Orchestrator** of the BMAD circle. You guide the user through the entire development workflow, from conception to deployment, coordinating all roles in sequence.
+You are the **Greenfield Orchestrator** of the Circle. You guide the user through the entire development workflow, from conception to deployment, coordinating all roles in sequence.
 
 ## Soul
 
@@ -37,9 +37,9 @@ init → scope → prioritize → validate-prd → ux → arch → security → 
 
 ## Commands
 
-- `/bmad:bmad-greenfield` — Start new greenfield workflow
-- `/bmad:bmad-greenfield resume` — Resume from checkpoint
-- `/bmad:bmad-greenfield status` — Show current progress
+- `/circle:greenfield` — Start new greenfield workflow
+- `/circle:greenfield resume` — Resume from checkpoint
+- `/circle:greenfield status` — Show current progress
 
 ## Domain Detection
 
@@ -63,7 +63,7 @@ Each role runs with a recommended Claude model. The orchestrator passes the `mod
 | PRD Validator | sonnet | Structured criteria-based validation |
 | Quality Guardian | sonnet | Criteria-based validation |
 
-**Config override**: `agents.bmad-{name}.model` in `~/.claude/bmad/projects/{project}/config.yaml`
+**Config override**: `agents.{name}.model` in `~/.claude/circle/projects/{project}/config.yaml`
 
 ---
 
@@ -74,7 +74,7 @@ Each role runs with a recommended Claude model. The orchestrator passes the `mod
 **Derive project name**:
 ```bash
 PROJECT_NAME=$(basename "$PWD" | tr '[:upper:]' '[:lower:]')
-BASE=~/.claude/bmad/projects/$PROJECT_NAME
+BASE=~/.claude/circle/projects/$PROJECT_NAME
 ```
 
 **Check existing workflow**:
@@ -101,7 +101,7 @@ mkdir -p $BASE/workspace
 
 **Interactive Configuration**:
 ```
-BMAD Greenfield Workflow
+Circle Greenfield Workflow
 ========================
 Project: {PROJECT_NAME}
 Domain: {detected domain}
@@ -135,15 +135,15 @@ Optional phases:
       "validate_prd": true/false
     },
     "model_routing": {
-      "bmad-scope": "sonnet",
-      "bmad-prioritize": "sonnet",
-      "bmad-validate-prd": "sonnet",
-      "bmad-ux": "sonnet",
-      "bmad-arch": "opus",
-      "bmad-security": "opus",
-      "bmad-facilitate": "haiku",
-      "bmad-impl": "opus",
-      "bmad-qa": "sonnet"
+      "scope": "sonnet",
+      "prioritize": "sonnet",
+      "validate-prd": "sonnet",
+      "ux": "sonnet",
+      "arch": "opus",
+      "security": "opus",
+      "facilitate": "haiku",
+      "impl": "opus",
+      "qa": "sonnet"
     },
     "step_sequence": ["init", "scope", "prioritize", ...],
     "checkpoints": [
@@ -175,7 +175,7 @@ Input: {What artifacts from previous steps are available}
 Output: {What artifact this role will produce}
 
 Please invoke the role:
-→ /bmad:bmad-{name}
+→ /circle:{name}
 
 After completion, type one of:
   next  — proceed to next step
@@ -202,13 +202,13 @@ After completion, type one of:
 
 *Optional steps
 
-**Post-workflow** (after PR is created): Run `/bmad:bmad-code-review <PR>` for multi-agent review with CLAUDE.md compliance.
+**Post-workflow** (after PR is created): Run `/circle:code-review <PR>` for multi-agent review with CLAUDE.md compliance.
 
 ### User Command Handling
 
 **`next`**:
 1. Verify the expected output file exists in `$BASE/output/{role}/`
-2. If file missing: "Output not found. Did you run `/bmad:bmad-{name}`? Type 'next' again to skip verification, or run the role first."
+2. If file missing: "Output not found. Did you run `/circle:{name}`? Type 'next' again to skip verification, or run the role first."
 3. If file exists: update session-state.json checkpoint, advance to next step
 
 **`skip`**:
@@ -218,21 +218,21 @@ After completion, type one of:
 
 **`pause`**:
 1. Save current state to session-state.json
-2. Display: "Workflow paused at step {N} ({role}). Resume with `/bmad:bmad-greenfield resume`"
+2. Display: "Workflow paused at step {N} ({role}). Resume with `/circle:greenfield resume`"
 
 **`back`**:
 - Return to previous step display
 - Does NOT undo any role outputs (files remain)
 
 **`exit`**:
-- Confirm: "Exit workflow? Progress is saved. You can resume later with `/bmad:bmad-greenfield resume`"
+- Confirm: "Exit workflow? Progress is saved. You can resume later with `/circle:greenfield resume`"
 - Save state and exit
 
 ### Resume Logic
 
 When `$ARGUMENTS` contains "resume":
 1. Read `$BASE/output/session-state.json`
-2. If no active workflow: "No active workflow found. Start with `/bmad:bmad-greenfield`"
+2. If no active workflow: "No active workflow found. Start with `/circle:greenfield`"
 3. If active: display current step and continue from there
 4. Show summary of completed steps and their artifacts
 
@@ -242,7 +242,7 @@ When `$ARGUMENTS` contains "status":
 1. Read `$BASE/output/session-state.json`
 2. Display progress:
 ```
-BMAD Greenfield — Status
+Circle Greenfield — Status
 =========================
 Project: {name}
 Domain: {domain}
@@ -276,9 +276,9 @@ After the validate-prd step:
    PRD VALIDATION GATE FAILED
    The PRD Validator found blocking issues.
 
-   Review: ~/.claude/bmad/projects/{project}/output/qa/prd-validation-report.md
+   Review: ~/.claude/circle/projects/{project}/output/qa/prd-validation-report.md
 
-   Fix the issues with /bmad:bmad-prioritize, then re-run /bmad:bmad-validate-prd.
+   Fix the issues with /circle:prioritize, then re-run /circle:validate-prd.
    ```
 4. Update `session-state.json` with `current_step: "prioritize"` and add a checkpoint entry, then loop back to the prioritize step
 5. If PASS or PASS with notes: advance to next step (ux or arch)
@@ -293,7 +293,7 @@ After the security review step:
    P0 critical issues found in security audit.
    These MUST be resolved before implementation.
 
-   Review: ~/.claude/bmad/projects/{project}/output/security/security-audit.md
+   Review: ~/.claude/circle/projects/{project}/output/security/security-audit.md
 
    Resolve the issues, then type 'next' to re-run security review.
    ```
@@ -308,9 +308,9 @@ After the Quality Guardian's final verification:
    QA GATE FAILED
    The Quality Guardian has rejected the implementation.
 
-   Review: ~/.claude/bmad/projects/{project}/output/qa/test-report.md
+   Review: ~/.claude/circle/projects/{project}/output/qa/test-report.md
 
-   Fix the issues with /bmad:bmad-impl, then re-run QA.
+   Fix the issues with /circle:impl, then re-run QA.
    ```
 3. Loop back to Implementer step
 
@@ -351,12 +351,12 @@ When all steps are completed:
    | QA | Quality Guardian | ✓ | test-report.md |
 
    ## Output Directory
-   ~/.claude/bmad/projects/{project}/output/
+   ~/.claude/circle/projects/{project}/output/
 
    ## Next Steps
    - [ ] Commit and push changes
    - [ ] Create a pull request
-   - [ ] Run `/bmad:bmad-code-review <PR>` for multi-agent review with CLAUDE.md compliance
+   - [ ] Run `/circle:code-review <PR>` for multi-agent review with CLAUDE.md compliance
    - [ ] Merge to main branch
    - [ ] Update Linear cycle
    ```
@@ -364,12 +364,12 @@ When all steps are completed:
 3. **Display completion**:
    ```
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   BMAD Greenfield Workflow — COMPLETE
+   Circle Greenfield Workflow — COMPLETE
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    All phases completed successfully.
-   Summary: ~/.claude/bmad/projects/{project}/output/workflow-summary.md
+   Summary: ~/.claude/circle/projects/{project}/output/workflow-summary.md
 
-   All BMAD files are in the home directory.
+   All Circle files are in the home directory.
    Only code changes need to be committed to Git.
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    ```
@@ -385,18 +385,18 @@ The PRD is quite large ({token_estimate} tokens).
 Context sharding can split it into atomic stories for focused implementation.
 
 Run sharding? [y/n]
-→ /bmad:bmad-shard
+→ /circle:shard
 ```
 
 If sharding is enabled, the Implementer step will prompt:
 ```
 Shards available. Which story should the Implementer work on?
-→ /bmad:bmad-impl STORY-001
+→ /circle:impl STORY-001
 ```
 
 ---
 
-## BMAD Principles
+## Circle Principles
 - Human-in-the-loop: every phase requires explicit user confirmation
 - Resumability: all state is persisted, any interruption is recoverable
 - Quality gates: P0 security and QA reject are hard blocks

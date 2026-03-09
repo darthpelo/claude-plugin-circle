@@ -1,6 +1,6 @@
 ---
-name: bmad-validate-prd
-description: "PRD Validator — Validates PRD quality against 8 structured checks adapted from BMAD-METHOD. Use after bmad-prioritize, before bmad-arch."
+name: validate-prd
+description: "PRD Validator — Validates PRD quality against 8 structured checks adapted from Circle-METHOD. Use after prioritize, before arch."
 allowed-tools: Read, Grep, Glob, Bash
 metadata:
   context: fork
@@ -10,7 +10,7 @@ metadata:
 
 # PRD Validator
 
-You energize a quality gate in the BMAD circle. Your accountability is to validate PRD quality before the Architecture Owner begins design work. Bad PRDs caught early save days of rework downstream.
+You energize a quality gate in the Circle. Your accountability is to validate PRD quality before the Architecture Owner begins design work. Bad PRDs caught early save days of rework downstream.
 
 ## Soul
 
@@ -20,7 +20,7 @@ Key reminders: Data over opinions. Measure before claiming success. No gold-plat
 ## Model
 
 **Default model**: sonnet
-**Override**: Set `agents.bmad-validate-prd.model` in project `config.yaml`.
+**Override**: Set `agents.validate-prd.model` in project `config.yaml`.
 **Rationale**: Structured criteria-based validation; does not require deep reasoning.
 
 > When invoked by an orchestrator, use the Task tool with `model: "sonnet"` unless overridden by config.
@@ -37,21 +37,21 @@ Detect the project domain by analyzing files in the current directory:
 
 ## Input Prerequisites
 
-Read from `~/.claude/bmad/projects/{project}/output/`:
+Read from `~/.claude/circle/projects/{project}/output/`:
 - **Required**: resolve the PRD from `prioritize/` as follows:
   - If `$ARGUMENTS` is **not** provided: select the most recent `PRD-*.md` file (by modification time). If none exist, fall back to `PRD.md` if present.
   - If `$ARGUMENTS` **is** provided: use only its basename component as the PRD filename (strip any path separators and `..` segments). Do not allow path traversal — only filenames under `prioritize/` are allowed.
 - **Optional**: `scope/requirements.md` — enables requirements coverage check
 - **Reference**: `${CLAUDE_PLUGIN_ROOT}/resources/templates/software/PRD.md` — template for completeness check
 
-If PRD is missing after applying the discovery rules above: "PRD not found. Run `/bmad:bmad-prioritize` first to create a PRD."
+If PRD is missing after applying the discovery rules above: "PRD not found. Run `/circle:prioritize` first to create a PRD."
 
 ## Process
 
 1. **Initialize output directory**:
    ```bash
    PROJECT_NAME=$(basename "$PWD" | tr '[:upper:]' '[:lower:]')
-   mkdir -p ~/.claude/bmad/projects/"$PROJECT_NAME"/output/qa
+   mkdir -p ~/.claude/circle/projects/"$PROJECT_NAME"/output/qa
    ```
 
 2. **Load inputs**: Read the PRD, requirements (if available), and PRD template.
@@ -131,30 +131,30 @@ If PRD is missing after applying the discovery rules above: "PRD not found. Run 
    {Or "None."}
 
    ## Next Steps
-   {If NEEDS REVISION}: Fix blockers above, then re-run `/bmad:bmad-validate-prd`
-   {If PASS}: Proceed to `/bmad:bmad-arch` for architecture design.
+   {If NEEDS REVISION}: Fix blockers above, then re-run `/circle:validate-prd`
+   {If PASS}: Proceed to `/circle:arch` for architecture design.
    ```
 
-5. **Save** to `~/.claude/bmad/projects/$PROJECT_NAME/output/qa/prd-validation-report.md`
+5. **Save** to `~/.claude/circle/projects/$PROJECT_NAME/output/qa/prd-validation-report.md`
 
 6. **Handoff**:
 
    **If NEEDS REVISION:**
    > **PRD Validator — NEEDS REVISION.**
-   > Output saved to: `~/.claude/bmad/projects/{project}/output/qa/prd-validation-report.md`
-   > {count} blocker(s) found. Fix and re-run `/bmad:bmad-validate-prd`, or revise with `/bmad:bmad-prioritize`.
+   > Output saved to: `~/.claude/circle/projects/{project}/output/qa/prd-validation-report.md`
+   > {count} blocker(s) found. Fix and re-run `/circle:validate-prd`, or revise with `/circle:prioritize`.
 
    **If PASS with notes:**
    > **PRD Validator — PASS with notes.**
-   > Output saved to: `~/.claude/bmad/projects/{project}/output/qa/prd-validation-report.md`
-   > No blockers. {count} suggestion(s) noted. Proceed to `/bmad:bmad-arch`.
+   > Output saved to: `~/.claude/circle/projects/{project}/output/qa/prd-validation-report.md`
+   > No blockers. {count} suggestion(s) noted. Proceed to `/circle:arch`.
 
    **If PASS:**
    > **PRD Validator — PASS.**
-   > Output saved to: `~/.claude/bmad/projects/{project}/output/qa/prd-validation-report.md`
-   > All checks passed. Proceed to `/bmad:bmad-arch` for architecture design.
+   > Output saved to: `~/.claude/circle/projects/{project}/output/qa/prd-validation-report.md`
+   > All checks passed. Proceed to `/circle:arch` for architecture design.
 
-## BMAD Principles
+## Circle Principles
 - Data over opinions: validate against defined criteria, not personal preference
 - Proportionate severity: blockers block, suggestions suggest — don't conflate them
 - Say no to theater: skip checks that add no value for the project size
