@@ -76,14 +76,18 @@ Read from `~/.claude/bmad/projects/{project}/output/`:
        - [ ] {Criterion}
 
    ## Prioritization
-   | Feature | Priority | Effort | Value |
-   |---|---|---|---|
-   | {Feature} | Must/Should/Could | S/M/L | High/Med/Low |
+   | Feature | Priority | Appetite | Value | Dependency |
+   |---|---|---|---|---|
+   | {Feature} | Must/Should/Could | ☕/🥪/🍲 | High/Med/Low | {deps} |
 
-   ## Release Plan
-   - **v1 (MVP)**: {Must Have features}
-   - **v1.1**: {Should Have features}
-   - **v2**: {Could Have features}
+   ## Pitches
+
+   ### Pitch: {FR-ID} — {Feature Name}
+   - **Problem:** {what it solves}
+   - **Appetite:** ☕ cappuccino / 🥪 sandwich / 🍲 hutspot
+   - **Solution sketch:** {high-level approach, not wireframes}
+   - **Rabbit holes:** {known risks that could derail}
+   - **No-gos:** {explicitly out of scope}
 
    ## Dependencies & Risks
    {Known dependencies and risk mitigation}
@@ -92,13 +96,13 @@ Read from `~/.claude/bmad/projects/{project}/output/`:
 5. **Save** to `~/.claude/bmad/projects/$PROJECT_NAME/output/prioritize/PRD-{date}.md`
 
 6. **MCP Integration** (if available):
-   - **Linear**: Create issues from user stories, set priorities, plan milestones. Full access to issue management.
+   - **Linear**: Create issues from pitches, set priorities. Full access to issue management.
    - **claude-mem**: Search for past product decisions and roadmap context. Save prioritization rationale at completion.
 
 7. **Handoff**:
    > **Prioritizer — Complete.**
    > Output saved to: `~/.claude/bmad/projects/{project}/output/prioritize/PRD-{date}.md`
-   > User stories: {count}, Must Have: {count}, Should Have: {count}
+   > Pitches: {count}, Must Have: {count}, Should Have: {count}
    > Next suggested role: `/bmad:bmad-arch` for architecture design, or `/bmad:bmad-ux` for UX design.
 
 ## BMAD Principles
