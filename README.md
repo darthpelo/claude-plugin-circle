@@ -6,7 +6,7 @@ Every role in this circle operates under the same set of principles — written 
 
 BMAD follows holacracy: roles have purposes and accountabilities, not job titles or personas. Authority is distributed — each role acts within its domain without asking permission.
 
-BMAD works for everyone on the team: product managers, designers, analysts, scrum masters, developers, and documentation writers. No programming knowledge required to get started.
+BMAD works for everyone on the team: product managers, designers, analysts, developers, and documentation writers. No programming knowledge required to get started.
 
 **New to BMAD?** Start with the [Getting Started Guide](docs/GETTING-STARTED.md) — it walks you through your first conversation with no technical setup.
 
@@ -20,7 +20,7 @@ BMAD works for everyone on the team: product managers, designers, analysts, scru
 | `/bmad:bmad-qa` | Quality Guardian | Plans testing strategy, validates quality |
 | `/bmad:bmad-ux` | Experience Designer | Designs user interfaces and user journeys |
 | `/bmad:bmad-prioritize` | Prioritizer | Prioritizes features, creates product plans (PRDs) |
-| `/bmad:bmad-facilitate` | Facilitator | Plans sprints, coordinates the team |
+| `/bmad:bmad-facilitate` | Facilitator | Plans cycles, coordinates the team |
 | `/bmad:bmad-security` | Security Guardian | Audits security, models threats, checks compliance |
 | `/bmad:bmad-docs` | Documentation Steward | Generates docs from templates |
 
@@ -40,8 +40,8 @@ These run multi-step workflows, guiding you through each phase with decision poi
 
 | Command | What it does |
 |---|---|
-| `/bmad:bmad-greenfield` | Runs the full workflow: Scope Clarifier (requirements) → Prioritizer (product plan) → PRD Validator (quality check) → Experience Designer (design) → Architecture Owner (architecture) → Security review → Facilitator (sprint plan) → Implementer (code) → Quality Guardian (tests). You can skip optional steps. |
-| `/bmad:bmad-sprint` | Interactive sprint planning ceremony — 6 steps from backlog review to sprint commitment |
+| `/bmad:bmad-greenfield` | Runs the full workflow: Scope Clarifier (requirements) → Prioritizer (product plan) → PRD Validator (quality check) → Experience Designer (design) → Architecture Owner (architecture) → Security review → Facilitator (cycle plan) → Implementer (code) → Quality Guardian (tests). You can skip optional steps. |
+| `/bmad:bmad-cycle` | Interactive cycle planning ceremony — 4-step Shape Up process from shaping review to cycle commitment |
 
 ## Utilities
 
@@ -81,7 +81,7 @@ All dependencies are **optional** — roles work without them and adapt when too
 
 | Dependency | Type | Group | What it adds |
 |---|---|---|---|
-| Linear | Cloud MCP | Core | Issue tracking and sprint management for all roles |
+| Linear | Cloud MCP | Core | Issue tracking and cycle management for all roles |
 | claude-mem | Plugin | Core | Memory that persists across sessions for all roles |
 | Notion | Plugin | Extras | The Documentation Steward can publish docs to Notion |
 | bmad-mcp | npm | Extras | Additional workflow tools for Greenfield orchestrator |
@@ -176,7 +176,7 @@ BMAD never adds files to your project repository. All outputs are stored in a se
 │   ├── security/     # Security audits
 │   ├── ux/           # UX designs
 │   ├── prioritize/   # PRDs
-│   ├── facilitate/   # Sprint plans
+│   ├── facilitate/   # Cycle plans
 │   └── docs/         # Generated docs
 ├── shards/           # Context shards
 │   ├── requirements/
@@ -219,7 +219,7 @@ Roles connect to external services through MCP (Model Context Protocol) when ava
 
 | MCP Server | Used By | What it provides |
 |---|---|---|
-| Linear | All roles | Issue tracking, sprint management |
+| Linear | All roles | Issue tracking, cycle management |
 | claude-mem | All roles | Memory that persists across Claude Code sessions |
 | Domain-specific tools | Roles with domain detection | Platform documentation and framework APIs (e.g., Cupertino for iOS) |
 
