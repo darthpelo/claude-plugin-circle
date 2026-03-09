@@ -1,6 +1,6 @@
-# BMAD — Status Dashboard
+# Circle — Status Dashboard
 
-Show the status of the BMAD framework for the current project.
+Show the status of the Circle framework for the current project.
 
 ## Process
 
@@ -10,16 +10,16 @@ Show the status of the BMAD framework for the current project.
    - **software**: if common project markers exist (e.g., `package.json`, `requirements.txt`, `go.mod`, `Cargo.toml`, `pom.xml`, `*.xcodeproj`, `Makefile`, `CMakeLists.txt`, `Gemfile`, `build.gradle`)
    - **general**: default if no software indicator found
 
-3. **Check workflow status**: Read `~/.claude/bmad/projects/<project-name>/output/session-state.json` if it exists.
+3. **Check workflow status**: Read `~/.claude/circle/projects/<project-name>/output/session-state.json` if it exists.
    - If it exists: show current phase, active workflow, completed steps
-   - If it doesn't exist: indicate BMAD is not yet initialized for this project
+   - If it doesn't exist: indicate Circle is not yet initialized for this project
 
-4. **Check existing artifacts**: List files in `~/.claude/bmad/projects/<project-name>/output/` if the directory exists. Show each role's output files.
+4. **Check existing artifacts**: List files in `~/.claude/circle/projects/<project-name>/output/` if the directory exists. Show each role's output files.
 
 5. **Show simple view** (default):
 
 ```
-BMAD — <project-name>
+Circle — <project-name>
 ================================
 Domain:  <detected>
 Status:  <initialized/not initialized>
@@ -27,38 +27,38 @@ Phase:   <current phase from session-state or "Not started">
 
 What's done:
   <List completed steps, e.g. "Requirements (Scope Clarifier)", "Architecture (Architecture Owner)">
-  <Or "Nothing yet — run /bmad-init to get started">
+  <Or "Nothing yet — run /circle:init to get started">
 
 What's next:
   <Next suggested step based on phase>
-  <Or "Run /bmad-greenfield for the full workflow">
+  <Or "Run /circle:greenfield for the full workflow">
 
 Your circle:
-  /bmad-scope       — Scope Clarifier (requirements, user stories)
-  /bmad-arch        — Architecture Owner (design, trade-offs)
-  /bmad-impl        — Implementer (implementation, code review)
-  /bmad-qa          — Quality Guardian (testing, quality)
-  /bmad-ux          — Experience Designer (UI/UX design)
-  /bmad-prioritize  — Prioritizer (prioritization, roadmap)
-  /bmad-facilitate  — Facilitator (cycle planning)
-  /bmad-security    — Security Guardian (audits, threat modeling)
-  /bmad-docs        — Documentation Steward
+  /circle:scope       — Scope Clarifier (requirements, user stories)
+  /circle:arch        — Architecture Owner (design, trade-offs)
+  /circle:impl        — Implementer (implementation, code review)
+  /circle:qa          — Quality Guardian (testing, quality)
+  /circle:ux          — Experience Designer (UI/UX design)
+  /circle:prioritize  — Prioritizer (prioritization, roadmap)
+  /circle:facilitate  — Facilitator (cycle planning)
+  /circle:security    — Security Guardian (audits, threat modeling)
+  /circle:docs        — Documentation Steward
 
 Workflows:
-  /bmad-greenfield — Full workflow start to finish
-  /bmad-cycle      — Cycle planning session (Shape Up)
+  /circle:greenfield — Full workflow start to finish
+  /circle:cycle      — Cycle planning session (Shape Up)
 
 Review:
-  /bmad-code-review — PR code review
-  /bmad-triage      — Handle review feedback
+  /circle:code-review — PR code review
+  /circle:triage      — Handle review feedback
 
 Utilities:
-  /bmad-validate-prd — PRD quality validation (8 checks)
-  /bmad-tdd          — TDD red-green-refactor enforcer
-  /bmad-init         — Set up BMAD for this project
-  /bmad-shard        — Split large docs for faster processing
+  /circle:validate-prd — PRD quality validation (8 checks)
+  /circle:tdd          — TDD red-green-refactor enforcer
+  /circle:init         — Set up Circle for this project
+  /circle:shard        — Split large docs for faster processing
 
-Tip: Type /bmad detailed for version info and dependency status.
+Tip: Type /circle detailed for version info and dependency status.
 ```
 
 6. **If the user requests "detailed" or "full" view**, also show:
@@ -78,7 +78,7 @@ Generated artifacts:
   triage/      <list of files or empty>
   docs/        <list of files or empty>
 
-Output directory: ~/.claude/bmad/projects/<project-name>/output/
+Output directory: ~/.claude/circle/projects/<project-name>/output/
 ```
 
 Active workflow details:
@@ -110,7 +110,7 @@ Dependencies:
     <list installed domain deps from deps-manifest.yaml>
 
   Local:
-    bmad  <version from plugin.json>
+    circle  <version from plugin.json>
 
   Setup:  bash ${CLAUDE_PLUGIN_ROOT}/resources/scripts/install-deps.sh
   Update: bash ${CLAUDE_PLUGIN_ROOT}/resources/scripts/update-deps.sh
