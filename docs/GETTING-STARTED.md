@@ -11,7 +11,7 @@ BMAD is designed for everyone involved in building a product:
 - **Product Managers** — define what to build, prioritize features, create roadmaps
 - **Business Analysts** — gather requirements, write user stories, clarify scope
 - **Designers** — create UI/UX designs, map user journeys, build wireframes
-- **Scrum Masters** — plan sprints, coordinate the team, track progress
+- **Team Leads** — plan work cycles, coordinate the team, track progress
 - **Developers** — implement features, review code, run tests
 - **Documentation writers** — generate docs from templates, keep things consistent
 
@@ -27,7 +27,7 @@ You don't need to be technical to use BMAD. If you can type a sentence and press
 | **Architecture Owner** | Plans how the software will be structured |
 | **Implementer** | Writes and reviews the actual code |
 | **Quality Guardian** | Makes sure everything works correctly |
-| **Facilitator** | Organizes the work into sprints |
+| **Facilitator** | Plans work cycles using Shape Up methodology |
 | **Security Guardian** | Audits security, models threats, checks compliance |
 | **Documentation Steward** | Creates project documentation |
 
@@ -70,16 +70,16 @@ After requirements are gathered, invoke the Experience Designer:
 /bmad:bmad-ux
 ```
 
-### If you're a Scrum Master
+### If you coordinate the team
 
-Use the Facilitator to run sprint planning, or use the sprint ceremony workflow:
+Use the Facilitator to plan a cycle, or use the cycle planning ceremony:
 
 ```
 /bmad:bmad-facilitate
 ```
 or
 ```
-/bmad:bmad-sprint
+/bmad:bmad-cycle
 ```
 
 ### If you're a Developer
@@ -98,7 +98,7 @@ The greenfield command runs the entire process from start to finish, with you ma
 /bmad:bmad-greenfield
 ```
 
-This walks through: Scope Clarifier (requirements) → Prioritizer (product plan) → PRD Validator (quality check) → Experience Designer (design) → Architecture Owner (architecture) → Security Guardian (security audit) → Facilitator (sprint planning) → Implementer (simplicity assessment + implementation with TDD) → Quality Guardian (testing + TDD compliance + coherence & scope drift check). You can skip optional steps.
+This walks through: Scope Clarifier (requirements) → Prioritizer (product plan) → PRD Validator (quality check) → Experience Designer (design) → Architecture Owner (architecture) → Security Guardian (security audit) → Facilitator (cycle planning) → Implementer (simplicity assessment + implementation with TDD) → Quality Guardian (testing + TDD compliance + coherence & scope drift check). You can skip optional steps.
 
 ## Available commands
 
@@ -112,11 +112,11 @@ Every command starts with `/bmad:`. Just type it and press Enter.
 | `/bmad:bmad-arch` | Plan software architecture |
 | `/bmad:bmad-impl` | Implement code |
 | `/bmad:bmad-qa` | Test and validate quality |
-| `/bmad:bmad-facilitate` | Plan sprints and coordinate |
+| `/bmad:bmad-facilitate` | Plan cycles and coordinate |
 | `/bmad:bmad-security` | Audit security and model threats |
 | `/bmad:bmad-docs` | Generate documentation |
 | `/bmad:bmad-greenfield` | Run the full workflow start to finish |
-| `/bmad:bmad-sprint` | Run a sprint planning session |
+| `/bmad:bmad-cycle` | Run a cycle planning session (Shape Up) |
 | `/bmad:bmad-code-review` | Review a pull request |
 | `/bmad:bmad-triage` | Handle review feedback on a pull request |
 | `/bmad:bmad-validate-prd` | Validate PRD quality before architecture design |

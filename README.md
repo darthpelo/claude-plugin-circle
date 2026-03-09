@@ -43,6 +43,8 @@ These run multi-step workflows, guiding you through each phase with decision poi
 | `/bmad:bmad-greenfield` | Runs the full workflow: Scope Clarifier (requirements) → Prioritizer (product plan) → PRD Validator (quality check) → Experience Designer (design) → Architecture Owner (architecture) → Security review → Facilitator (cycle plan) → Implementer (code) → Quality Guardian (tests). You can skip optional steps. |
 | `/bmad:bmad-cycle` | Interactive cycle planning ceremony — 4-step Shape Up process from shaping review to cycle commitment |
 
+> **Shape Up**: BMAD uses [Shape Up](https://basecamp.com/shapeup) for work planning — appetite-based sizing (☕ cappuccino, 🥪 sandwich, 🍲 hutspot) instead of story points, and 4-week cycles instead of sprints.
+
 ## Utilities
 
 | Command | What it does |
