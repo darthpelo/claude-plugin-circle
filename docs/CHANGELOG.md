@@ -1,5 +1,28 @@
 # Changelog
 
+## v1.2.0 — Effort Routing & Parallel Implementation
+
+### Effort Routing
+
+Per-role effort level configuration alongside existing model routing. Each fork-context role declares a default effort level (`low`, `medium`, `high`, `max`) in its frontmatter metadata. Greenfield displays effort in step headers and persists it in session-state.json.
+
+- **9 fork-context skills updated** — scope, prioritize, validate-prd, ux, arch, security, facilitate, impl, qa now declare `metadata.effort`
+- **Greenfield model routing table** — expanded to show default effort per role
+- **session-state.json** — new `effort_routing` map alongside `model_routing`
+- **config.yaml** — `agents.<name>.effort` override per project
+- **Precedence**: config.yaml > session-state.json > skill frontmatter default
+
+### Worktree Parallel Implementation
+
+When stories are sharded, greenfield can implement independent stories in parallel using git worktrees. The orchestrator builds a dependency DAG from story shards, groups independent stories into execution waves, and launches up to 3 concurrent impl agents in isolated worktrees.
+
+- **Dependency graph** — parses `Dependencies` from story shards, filters to story-to-story deps only
+- **Wave execution** — independent stories grouped into parallel batches (max `parallel.max_agents`)
+- **Automatic merge** — `git merge --no-ff` per completed worktree, preserving per-story commit history
+- **Conflict handling** — merge conflicts pause the workflow with clear resolution instructions
+- **config.yaml** — `parallel.enabled` (default: true) and `parallel.max_agents` (default: 3)
+- **Graceful fallback** — no shards or parallel disabled → sequential impl as before
+
 ## v1.1.0 — Work Tracking
 
 ### Assessment-Aware Work Tracking

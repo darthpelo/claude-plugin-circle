@@ -6,6 +6,7 @@ metadata:
   context: fork
   agent: qa
   model: opus
+  effort: high
 ---
 
 # Security Guardian

@@ -19,7 +19,7 @@ If you just want to tweak how Circle works for your project, here are the most c
 | Layer | What | Where | Friction |
 |---|---|---|---|
 | **Soul** | Team principles | `plugin/resources/soul.md` | Edit file, instant effect |
-| **Knowledge Pack** | Project-aware roles | `docs/bmad/` in your repo | Create Markdown files |
+| **Knowledge Pack** | Project-aware roles | `docs/circle/` in your repo | Create Markdown files |
 | **Per-project config** | Role overrides, templates | `~/.claude/circle/projects/<project>/config.yaml` | Create YAML file |
 | **Role behavior** | Role definitions | `plugin/skills/<name>/SKILL.md` | Edit SKILL.md |
 | **Templates** | Document templates | `plugin/resources/templates/` | Drop .md file |
@@ -34,7 +34,7 @@ A Knowledge Pack makes Circle understand your project. It's a set of Markdown fi
 
 ### Step 1: Create knowledge files
 
-Create `docs/bmad/` (or `Docs/bmad/`) in your repo with these files:
+Create `docs/circle/` (or `Docs/circle/`) in your repo with these files:
 
 | File | What to include | Target size |
 |---|---|---|
@@ -47,7 +47,7 @@ Create `docs/bmad/` (or `Docs/bmad/`) in your repo with these files:
 Each file starts with a metadata comment for staleness tracking:
 
 ```markdown
-<!-- bmad-knowledge | last-reviewed: 2026-03-04 | owner: @yourhandle -->
+<!-- circle-knowledge | last-reviewed: 2026-03-04 | owner: @yourhandle -->
 # Your Title
 
 Content organized with ## headers...
@@ -56,12 +56,12 @@ Content organized with ## headers...
 For cross-platform projects sharing domain vocabulary, add a sync marker:
 
 ```markdown
-<!-- shared-origin: my-domain | sync-with: other-repo/docs/bmad/domain.md -->
+<!-- shared-origin: my-domain | sync-with: other-repo/docs/circle/domain.md -->
 ```
 
 ### Step 2: Create config template
 
-Add `docs/bmad/config.yaml` to your repo. This maps knowledge files to Circle roles:
+Add `docs/circle/config.yaml` to your repo. This maps knowledge files to Circle roles:
 
 ```yaml
 project:
@@ -75,56 +75,56 @@ reading_order:
 agents:
   scope:
     context_files:
-      - docs/bmad/project.md
-      - docs/bmad/domain.md
+      - docs/circle/project.md
+      - docs/circle/domain.md
 
   arch:
     context_files:
-      - docs/bmad/project.md
-      - docs/bmad/domain.md
-      - docs/bmad/architecture.md
-      - docs/bmad/integrations.md
+      - docs/circle/project.md
+      - docs/circle/domain.md
+      - docs/circle/architecture.md
+      - docs/circle/integrations.md
     extra_instructions: |
       Use domain-specific skills for architecture decisions.
 
   impl:
     context_files:
-      - docs/bmad/project.md
-      - docs/bmad/domain.md
-      - docs/bmad/architecture.md
-      - docs/bmad/build.md
-      - docs/bmad/integrations.md
+      - docs/circle/project.md
+      - docs/circle/domain.md
+      - docs/circle/architecture.md
+      - docs/circle/build.md
+      - docs/circle/integrations.md
     extra_instructions: |
       Run build verification before committing.
 
   qa:
     context_files:
-      - docs/bmad/project.md
-      - docs/bmad/domain.md
-      - docs/bmad/architecture.md
-      - docs/bmad/build.md
+      - docs/circle/project.md
+      - docs/circle/domain.md
+      - docs/circle/architecture.md
+      - docs/circle/build.md
 
   code-review:
     context_files:
-      - docs/bmad/project.md
-      - docs/bmad/architecture.md
-      - docs/bmad/build.md
+      - docs/circle/project.md
+      - docs/circle/architecture.md
+      - docs/circle/build.md
 
   ux:
     context_files:
-      - docs/bmad/project.md
-      - docs/bmad/domain.md
+      - docs/circle/project.md
+      - docs/circle/domain.md
 
   security:
     context_files:
-      - docs/bmad/project.md
-      - docs/bmad/architecture.md
-      - docs/bmad/integrations.md
+      - docs/circle/project.md
+      - docs/circle/architecture.md
+      - docs/circle/integrations.md
 ```
 
 ### Step 3: Activate
 
-Run `/circle:init`. It detects the config template at `docs/bmad/config.yaml` and copies it to `~/.claude/circle/projects/<project>/config.yaml`. Every Circle role now loads project knowledge automatically.
+Run `/circle:init`. It detects the config template at `docs/circle/config.yaml` and copies it to `~/.claude/circle/projects/<project>/config.yaml`. Every Circle role now loads project knowledge automatically.
 
 New team members: clone the repo → `/circle:init` → done.
 
@@ -190,6 +190,8 @@ allowed-tools: Read, Grep, Glob, Bash
 metadata:
   context: fork            # fork = isolated subagent | same = main conversation
   agent: general-purpose   # Explore, Plan, qa, or general-purpose
+  model: sonnet            # opus, sonnet, or haiku
+  effort: medium           # low, medium, high, or max
 ---
 
 # <Role Name>
@@ -254,22 +256,23 @@ To add a new role to the greenfield orchestrator:
 
 ---
 
-## 7. Model Routing
+## 7. Model & Effort Routing
 
-Circle assigns a default Claude model to each fork-context role based on task complexity. Opus handles deep reasoning (architecture, security, implementation), Sonnet handles structured work (scope, prioritization, QA), and Haiku handles lightweight coordination.
+Circle assigns a default Claude model and effort level to each fork-context role based on task complexity. Model controls which Claude model runs; effort controls reasoning depth within that model.
 
 ### Default Assignments
 
-| Role | Default Model | Rationale |
-|------|--------------|-----------|
-| Scope Clarifier | sonnet | Structured requirements gathering |
-| Prioritizer | sonnet | Feature prioritization |
-| Experience Designer | sonnet | UX design patterns |
-| Architecture Owner | opus | Deep trade-off reasoning |
-| Security Guardian | opus | Adversarial threat modeling |
-| Facilitator | haiku | Lightweight coordination |
-| Implementer | opus | Code generation quality |
-| Quality Guardian | sonnet | Criteria-based validation |
+| Role | Default Model | Default Effort | Rationale |
+|------|--------------|----------------|-----------|
+| Scope Clarifier | sonnet | medium | Structured requirements gathering |
+| Prioritizer | sonnet | medium | Feature prioritization |
+| Experience Designer | sonnet | medium | UX design patterns |
+| Architecture Owner | opus | high | Deep trade-off reasoning |
+| Security Guardian | opus | high | Adversarial threat modeling |
+| Facilitator | haiku | low | Lightweight coordination |
+| Implementer | opus | high | Code generation quality |
+| PRD Validator | sonnet | low | Checklist-based validation |
+| Quality Guardian | sonnet | medium | Criteria-based validation |
 
 Code review agents (spawned by `code-review` via Task tool) also default to **sonnet**. Configure via `code_review.agent_a_model` and `code_review.agent_b_model` in config.yaml. Note: `code-review` itself is same-context and inherits the session model — only its spawned agents are configurable.
 
@@ -279,10 +282,13 @@ Code review agents (spawned by `code-review` via Task tool) also default to **so
 agents:
   arch:
     model: opus       # deep reasoning tasks
+    effort: high      # high reasoning depth
   scope:
     model: sonnet     # structured tasks
+    effort: medium    # moderate reasoning depth
   facilitate:
     model: haiku      # lightweight tasks
+    effort: low       # minimal reasoning depth
 
 # Code review agent models
 code_review:
@@ -290,15 +296,58 @@ code_review:
   agent_b_model: sonnet
 ```
 
+### Effort Levels
+
+| Level | Use for |
+|-------|---------|
+| `low` | Checklist validation, lightweight coordination, boilerplate |
+| `medium` | Structured gathering, prioritization, criteria-based QA |
+| `high` | Architecture design, security modeling, code generation |
+| `max` | Complex multi-system reasoning (use sparingly) |
+
+**Precedence**: config.yaml > session-state.json > skill frontmatter default
+
 ### How It Works
 
-- **Fork-context skills** (`context: fork`) specify `model:` in frontmatter metadata. Orchestrators pass this to the Task tool's `model` parameter.
+- **Fork-context skills** (`context: fork`) specify `model:` and `effort:` in frontmatter metadata. Orchestrators pass these when presenting role invocations.
 - **Same-context skills** (`context: same`) inherit the session model and cannot be overridden.
-- **Config overrides** take precedence over frontmatter defaults.
+- **Config overrides** take precedence over frontmatter defaults for both model and effort.
 
 ### Cost Implications
 
-Model routing lets you optimize cost without sacrificing quality where it matters. Approximate relative cost per token: Opus (5x), Sonnet (1x), Haiku (0.2x).
+Model and effort routing let you optimize cost without sacrificing quality where it matters. Approximate relative cost per token: Opus (5x), Sonnet (1x), Haiku (0.2x). Higher effort levels increase token usage within a session.
+
+---
+
+## 8. Parallel Implementation
+
+When stories are sharded (via `/circle:shard`), greenfield can implement independent stories in parallel using git worktrees. This reduces wall-clock time for multi-story features.
+
+### How It Works
+
+1. Greenfield detects `shards/stories/` with ≥2 story files
+2. Parses `Dependencies` from each story shard
+3. Builds a dependency graph (story-to-story deps only)
+4. Groups independent stories into parallel waves (max 3 concurrent)
+5. Launches impl agents in isolated worktrees
+6. Merges completed worktrees into the feature branch via `git merge --no-ff`
+7. Pauses on merge conflicts for manual resolution
+
+### Configuration
+
+```yaml
+parallel:
+  enabled: true       # default: true (disable to force sequential impl)
+  max_agents: 3       # default: 3, max concurrent worktree agents
+```
+
+### When It Activates
+
+Parallel impl runs only when:
+- `shards/stories/` exists with ≥2 story files
+- `parallel.enabled` is not `false` in config.yaml
+
+Otherwise, greenfield falls back to sequential implementation silently.
 
 ---
 

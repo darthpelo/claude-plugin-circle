@@ -6,6 +6,7 @@ metadata:
   context: fork
   agent: Plan
   model: sonnet
+  effort: medium
 ---
 
 # Experience Designer

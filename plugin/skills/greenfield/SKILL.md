@@ -47,23 +47,27 @@ Detect the project domain by analyzing files in the current directory:
 - **software**: if common project markers exist (e.g., `package.json`, `requirements.txt`, `go.mod`, `Cargo.toml`, `pom.xml`, `*.xcodeproj`, `Makefile`, `CMakeLists.txt`, `Gemfile`, `build.gradle`)
 - **general**: default if no software indicator found
 
-## Model Routing
+## Model & Effort Routing
 
-Each role runs with a recommended Claude model. The orchestrator passes the `model` parameter when presenting role invocations. Users can override per-project in `config.yaml`.
+Each role runs with a recommended Claude model and effort level. The orchestrator passes both `model` and effort parameters when presenting role invocations. Users can override per-project in `config.yaml`.
 
-| Role | Default Model | Rationale |
-|------|--------------|-----------|
-| Scope Clarifier | sonnet | Structured requirements gathering |
-| Prioritizer | sonnet | Feature prioritization |
-| Experience Designer | sonnet | UX design patterns |
-| Architecture Owner | opus | Deep trade-off reasoning |
-| Security Guardian | opus | Adversarial threat modeling |
-| Facilitator | haiku | Lightweight coordination |
-| Implementer | opus | Code generation quality |
-| PRD Validator | sonnet | Structured criteria-based validation |
-| Quality Guardian | sonnet | Criteria-based validation |
+| Role | Default Model | Default Effort | Rationale |
+|------|--------------|----------------|-----------|
+| Scope Clarifier | sonnet | medium | Structured requirements gathering |
+| Prioritizer | sonnet | medium | Feature prioritization |
+| Experience Designer | sonnet | medium | UX design patterns |
+| Architecture Owner | opus | high | Deep trade-off reasoning |
+| Security Guardian | opus | high | Adversarial threat modeling |
+| Facilitator | haiku | low | Lightweight coordination |
+| Implementer | opus | high | Code generation quality |
+| PRD Validator | sonnet | low | Structured criteria-based validation |
+| Quality Guardian | sonnet | medium | Criteria-based validation |
 
-**Config override**: `agents.{name}.model` in `~/.claude/circle/projects/{project}/config.yaml`
+**Effort levels**: `low`, `medium`, `high`, `max` — controls reasoning depth per role.
+
+**Config override**: `agents.{name}.model` and `agents.{name}.effort` in `~/.claude/circle/projects/{project}/config.yaml`
+
+**Effort precedence**: config.yaml > session-state.json > skill frontmatter default
 
 ---
 
@@ -145,6 +149,17 @@ Optional phases:
       "impl": "opus",
       "qa": "sonnet"
     },
+    "effort_routing": {
+      "scope": "medium",
+      "prioritize": "medium",
+      "validate-prd": "low",
+      "ux": "medium",
+      "arch": "high",
+      "security": "high",
+      "facilitate": "low",
+      "impl": "high",
+      "qa": "medium"
+    },
     "step_sequence": ["init", "scope", "prioritize", ...],
     "checkpoints": [
       {
@@ -167,10 +182,10 @@ For each step in the sequence, follow this protocol:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Step {N}/{total}: {Role Name} [{model}]
+Step {N}/{total}: {Role Name} [{model}] [{effort}]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Purpose: {What this role will do}
-Model: {opus|sonnet|haiku} (override in config.yaml)
+Model: {opus|sonnet|haiku} | Effort: {low|medium|high|max}
 Input: {What artifacts from previous steps are available}
 Output: {What artifact this role will produce}
 
@@ -188,17 +203,17 @@ After completion, type one of:
 
 ### Role Sequence Detail
 
-| Step | Role | Model | Purpose | Input | Output |
-|---|---|---|---|---|---|
-| 1 | **Scope Clarifier** | sonnet | Gather requirements | User description | `scope/requirements.md` |
-| 2 | **Prioritizer** | sonnet | Prioritize & create PRD | Requirements | `prioritize/PRD-{date}.md` |
-| 3* | **PRD Validator** | sonnet | Validate PRD quality | PRD + Requirements | `qa/prd-validation-report.md` |
-| 4* | **Experience Designer** | sonnet | Design UX | PRD | `ux/ux-design.md` |
-| 5 | **Architecture Owner** | opus | Design architecture | PRD + UX (if available) | `arch/architecture.md` |
-| 6 | **Security Guardian** | opus | Security audit | Architecture | `security/security-audit.md` |
-| 7* | **Facilitator** | haiku | Cycle planning | PRD + Architecture | `facilitate/cycle-plan.md` |
-| 8 | **Implementer** | opus | Implement | Architecture + PRD | Code in repo |
-| 9 | **Quality Guardian** | sonnet | Test & validate | Requirements + Code | `qa/test-report-{date}.md` |
+| Step | Role | Model | Effort | Purpose | Input | Output |
+|---|---|---|---|---|---|---|
+| 1 | **Scope Clarifier** | sonnet | medium | Gather requirements | User description | `scope/requirements.md` |
+| 2 | **Prioritizer** | sonnet | medium | Prioritize & create PRD | Requirements | `prioritize/PRD-{date}.md` |
+| 3* | **PRD Validator** | sonnet | low | Validate PRD quality | PRD + Requirements | `qa/prd-validation-report.md` |
+| 4* | **Experience Designer** | sonnet | medium | Design UX | PRD | `ux/ux-design.md` |
+| 5 | **Architecture Owner** | opus | high | Design architecture | PRD + UX (if available) | `arch/architecture.md` |
+| 6 | **Security Guardian** | opus | high | Security audit | Architecture | `security/security-audit.md` |
+| 7* | **Facilitator** | haiku | low | Cycle planning | PRD + Architecture | `facilitate/cycle-plan.md` |
+| 8 | **Implementer** | opus | high | Implement | Architecture + PRD | Code in repo |
+| 9 | **Quality Guardian** | sonnet | medium | Test & validate | Requirements + Code | `qa/test-report-{date}.md` |
 
 *Optional steps
 
@@ -388,11 +403,113 @@ Run sharding? [y/n]
 → /circle:shard
 ```
 
-If sharding is enabled, the Implementer step will prompt:
+If sharding is enabled and parallel execution is disabled, the Implementer step will prompt:
 ```
 Shards available. Which story should the Implementer work on?
 → /circle:impl STORY-001
 ```
+
+---
+
+## Parallel Implementation
+
+When shards exist and the impl step is reached, the orchestrator can launch independent stories in parallel using git worktrees.
+
+### Activation Conditions
+
+Parallel impl activates only when ALL of these are true:
+1. `shards/stories/` directory exists with ≥2 story files
+2. `parallel.enabled` is not `false` in config.yaml (default: true)
+
+When either condition fails, fall back to sequential impl (current behavior, no warning).
+
+### Dependency Graph
+
+1. Read all files in `$BASE/shards/stories/`
+2. Parse the `**Dependencies**:` field from each story shard
+3. Filter to **story-to-story dependencies only** (ADR/FR references are informational, not blocking)
+4. Build a DAG of story dependencies
+5. Group stories into execution waves:
+   - **Wave 1**: stories with zero unresolved story dependencies
+   - **Wave 2**: stories whose deps are all in wave 1
+   - ...and so on
+6. Stories without a Dependencies field are treated as independent (wave 1)
+
+### Execution Protocol
+
+1. Display the wave plan to the user:
+   ```
+   Parallel implementation plan:
+   Wave 1 (parallel, max {max_agents}): STORY-001, STORY-002, STORY-003
+   Wave 2 (after wave 1): STORY-004
+   Proceed? [y/n]
+   ```
+
+2. For each wave:
+   a. Launch `min(wave_size, parallel.max_agents)` Task agents in a single message:
+      - Each with `isolation: "worktree"`
+      - Each with prompt: `/circle:impl STORY-xxx`
+      - Each with `model` from model_routing and effort from effort_routing
+   b. Wait for all agents in the wave to complete
+   c. For each completed agent, merge into the feature branch:
+      ```
+      git merge <worktree-branch> --no-ff -m "merge: STORY-xxx implementation"
+      ```
+   d. If merge succeeds: log in session-state checkpoints, clean up worktree
+   e. If merge conflicts: **pause workflow**, display conflict details:
+      ```
+      MERGE CONFLICT — STORY-xxx
+      Conflicting files:
+        - {file1}
+        - {file2}
+
+      Resolve conflicts manually, then type 'next' to continue merging.
+      ```
+   f. After all merges in wave complete, advance to next wave
+
+3. After all waves complete: advance to QA step
+
+### Parallel Configuration
+
+Read from config.yaml:
+```yaml
+parallel:
+  enabled: true       # default: true
+  max_agents: 3       # default: 3, max concurrent worktree agents
+```
+
+### Session State for Parallel Execution
+
+When parallel impl is active, add to session-state.json:
+```json
+{
+  "parallel": {
+    "enabled": true,
+    "max_agents": 3,
+    "waves": [
+      {
+        "wave": 1,
+        "stories": ["STORY-001", "STORY-002", "STORY-003"],
+        "status": "completed"
+      },
+      {
+        "wave": 2,
+        "stories": ["STORY-004"],
+        "status": "pending"
+      }
+    ]
+  }
+}
+```
+
+### Error Handling
+
+| Scenario | Behavior |
+|----------|----------|
+| Merge conflict | Pause workflow, show conflict files, wait for user resolution |
+| Agent failure | Log failure, continue other agents in wave, report at wave end |
+| All agents in wave fail | Pause workflow, suggest manual intervention |
+| Invalid effort value in config | Warn, fall back to skill frontmatter default |
 
 ---
 

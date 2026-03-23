@@ -6,6 +6,7 @@ metadata:
   context: fork
   agent: Plan
   model: opus
+  effort: high
 ---
 
 # Architecture Owner
