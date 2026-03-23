@@ -6,6 +6,7 @@ metadata:
   context: fork
   agent: general-purpose
   model: sonnet
+  effort: medium
 ---
 
 # Prioritizer

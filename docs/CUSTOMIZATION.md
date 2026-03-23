@@ -254,22 +254,23 @@ To add a new role to the greenfield orchestrator:
 
 ---
 
-## 7. Model Routing
+## 7. Model & Effort Routing
 
-Circle assigns a default Claude model to each fork-context role based on task complexity. Opus handles deep reasoning (architecture, security, implementation), Sonnet handles structured work (scope, prioritization, QA), and Haiku handles lightweight coordination.
+Circle assigns a default Claude model and effort level to each fork-context role based on task complexity. Model controls which Claude model runs; effort controls reasoning depth within that model.
 
 ### Default Assignments
 
-| Role | Default Model | Rationale |
-|------|--------------|-----------|
-| Scope Clarifier | sonnet | Structured requirements gathering |
-| Prioritizer | sonnet | Feature prioritization |
-| Experience Designer | sonnet | UX design patterns |
-| Architecture Owner | opus | Deep trade-off reasoning |
-| Security Guardian | opus | Adversarial threat modeling |
-| Facilitator | haiku | Lightweight coordination |
-| Implementer | opus | Code generation quality |
-| Quality Guardian | sonnet | Criteria-based validation |
+| Role | Default Model | Default Effort | Rationale |
+|------|--------------|----------------|-----------|
+| Scope Clarifier | sonnet | medium | Structured requirements gathering |
+| Prioritizer | sonnet | medium | Feature prioritization |
+| Experience Designer | sonnet | medium | UX design patterns |
+| Architecture Owner | opus | high | Deep trade-off reasoning |
+| Security Guardian | opus | high | Adversarial threat modeling |
+| Facilitator | haiku | low | Lightweight coordination |
+| Implementer | opus | high | Code generation quality |
+| PRD Validator | sonnet | low | Checklist-based validation |
+| Quality Guardian | sonnet | medium | Criteria-based validation |
 
 Code review agents (spawned by `code-review` via Task tool) also default to **sonnet**. Configure via `code_review.agent_a_model` and `code_review.agent_b_model` in config.yaml. Note: `code-review` itself is same-context and inherits the session model — only its spawned agents are configurable.
 
@@ -279,10 +280,13 @@ Code review agents (spawned by `code-review` via Task tool) also default to **so
 agents:
   arch:
     model: opus       # deep reasoning tasks
+    effort: high      # high reasoning depth
   scope:
     model: sonnet     # structured tasks
+    effort: medium    # moderate reasoning depth
   facilitate:
     model: haiku      # lightweight tasks
+    effort: low       # minimal reasoning depth
 
 # Code review agent models
 code_review:
@@ -290,15 +294,58 @@ code_review:
   agent_b_model: sonnet
 ```
 
+### Effort Levels
+
+| Level | Use for |
+|-------|---------|
+| `low` | Checklist validation, lightweight coordination, boilerplate |
+| `medium` | Structured gathering, prioritization, criteria-based QA |
+| `high` | Architecture design, security modeling, code generation |
+| `max` | Complex multi-system reasoning (use sparingly) |
+
+**Precedence**: config.yaml > session-state.json > skill frontmatter default
+
 ### How It Works
 
-- **Fork-context skills** (`context: fork`) specify `model:` in frontmatter metadata. Orchestrators pass this to the Task tool's `model` parameter.
+- **Fork-context skills** (`context: fork`) specify `model:` and `effort:` in frontmatter metadata. Orchestrators pass these when presenting role invocations.
 - **Same-context skills** (`context: same`) inherit the session model and cannot be overridden.
-- **Config overrides** take precedence over frontmatter defaults.
+- **Config overrides** take precedence over frontmatter defaults for both model and effort.
 
 ### Cost Implications
 
-Model routing lets you optimize cost without sacrificing quality where it matters. Approximate relative cost per token: Opus (5x), Sonnet (1x), Haiku (0.2x).
+Model and effort routing let you optimize cost without sacrificing quality where it matters. Approximate relative cost per token: Opus (5x), Sonnet (1x), Haiku (0.2x). Higher effort levels increase token usage within a session.
+
+---
+
+## 8. Parallel Implementation
+
+When stories are sharded (via `/circle:shard`), greenfield can implement independent stories in parallel using git worktrees. This reduces wall-clock time for multi-story features.
+
+### How It Works
+
+1. Greenfield detects `shards/stories/` with ≥2 story files
+2. Parses `Dependencies` from each story shard
+3. Builds a dependency graph (story-to-story deps only)
+4. Groups independent stories into parallel waves (max 3 concurrent)
+5. Launches impl agents in isolated worktrees
+6. Merges completed worktrees into the feature branch via `git merge --no-ff`
+7. Pauses on merge conflicts for manual resolution
+
+### Configuration
+
+```yaml
+parallel:
+  enabled: true       # default: true (disable to force sequential impl)
+  max_agents: 3       # default: 3, max concurrent worktree agents
+```
+
+### When It Activates
+
+Parallel impl runs only when:
+- `shards/stories/` exists with ≥2 story files
+- `parallel.enabled` is not `false` in config.yaml
+
+Otherwise, greenfield falls back to sequential implementation silently.
 
 ---
 

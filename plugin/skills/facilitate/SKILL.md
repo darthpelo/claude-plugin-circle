@@ -6,6 +6,7 @@ metadata:
   context: fork
   agent: general-purpose
   model: haiku
+  effort: low
 ---
 
 # Facilitator

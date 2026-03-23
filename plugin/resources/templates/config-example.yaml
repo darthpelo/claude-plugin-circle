@@ -37,19 +37,24 @@ tdd:
   enabled: true           # Enable TDD workflow (default: true)
   enforcement: hard       # hard = QA blocks on violation; soft = QA warns only
 
-# Model routing — assign Claude model per role (opus, sonnet, haiku)
-# Roles with context: fork run as subagents and respect this setting.
-# Roles with context: same inherit the session model (setting is ignored).
-# Default: inherits from session (usually opus).
+# Model & effort routing — assign Claude model and effort level per role
+# Roles with context: fork run as subagents and respect these settings.
+# Roles with context: same inherit the session model (settings are ignored).
+# Model default: inherits from session (usually opus).
+# Effort levels: low, medium, high, max (controls reasoning depth).
+# Effort precedence: config.yaml > session-state.json > skill frontmatter default.
 #
-# Role overrides — add model, extra context, or instructions per role
+# Role overrides — add model, effort, extra context, or instructions per role
 agents:
   scope:
     model: sonnet
+    effort: medium
   prioritize:
     model: sonnet
+    effort: medium
   arch:
     model: opus
+    effort: high
     # Additional files to read for architectural context
     context_files:
       - docs/ARCHITECTURE.md
@@ -60,12 +65,16 @@ agents:
       All new modules must follow the existing pattern.
   validate-prd:
     model: sonnet
+    effort: low
   security:
     model: opus
+    effort: high
   facilitate:
     model: haiku
+    effort: low
   impl:
     model: opus
+    effort: high
     context_files:
       - src/
     extra_instructions: |
@@ -73,14 +82,24 @@ agents:
       All public APIs must have documentation comments.
   qa:
     model: sonnet
+    effort: medium
     extra_instructions: |
       Minimum test coverage target: 80%.
       Focus on integration tests for data flows.
   ux:
     model: sonnet
+    effort: medium
     extra_instructions: |
       Follow platform design guidelines.
       Support accessibility features.
+
+# Parallel implementation — worktree-based parallel execution of sharded stories
+# When stories are sharded (via /circle:shard), greenfield can implement
+# independent stories in parallel using git worktrees.
+# Requires: shards/stories/ with ≥2 story files.
+parallel:
+  enabled: true           # Enable parallel impl (default: true)
+  max_agents: 3           # Max concurrent worktree agents (default: 3)
 
 # Code review agent models (code-review spawns 2 parallel agents)
 code_review:

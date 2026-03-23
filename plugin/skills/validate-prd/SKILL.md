@@ -6,6 +6,7 @@ metadata:
   context: fork
   agent: qa
   model: sonnet
+  effort: low
 ---
 
 # PRD Validator

@@ -6,6 +6,7 @@ metadata:
   context: fork
   agent: Explore
   model: sonnet
+  effort: medium
 ---
 
 # Scope Clarifier

@@ -6,6 +6,7 @@ metadata:
   context: fork
   agent: qa
   model: sonnet
+  effort: medium
 ---
 
 # Quality Guardian
