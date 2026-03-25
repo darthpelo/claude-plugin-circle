@@ -9,14 +9,14 @@ metadata:
 
 # Circle Document Sharding
 
-Implements Circle context sharding: splits large documents into atomic story files that roles can load individually, dramatically reducing token usage.
+Implements Circle context sharding: splits large documents into atomic task files that roles can load individually, dramatically reducing token usage.
 
 ## Why Sharding Matters
 
-When the Implementer works on STORY-001, it doesn't need to load the entire PRD. Sharding splits documents into focused atomic files so each role invocation loads only what's relevant.
+When the Implementer works on TASK-001, it doesn't need to load the entire PRD. Sharding splits documents into focused atomic files so each role invocation loads only what's relevant.
 
 - **Without sharding**: The Implementer loads full PRD (~5000+ tokens) every time
-- **With sharding**: The Implementer loads one shard (~200-400 tokens) per story
+- **With sharding**: The Implementer loads one shard (~200-400 tokens) per task
 - **Result**: ~90% token reduction per role invocation
 
 ## Input
@@ -37,12 +37,12 @@ If no documents found: "No documents to shard. Run `/circle:prioritize` or `/cir
    ```bash
    PROJECT_NAME=$(basename "$PWD" | tr '[:upper:]' '[:lower:]')
    BASE=~/.claude/circle/projects/$PROJECT_NAME
-   mkdir -p $BASE/shards/{requirements,architecture,stories}
+   mkdir -p $BASE/shards/{requirements,architecture,tasks}
    ```
 
 2. **Analyze documents**: Identify independent sections
    - Functional requirements → individual requirement shards
-   - User stories / epics → individual story shards
+   - Work items / initiatives → individual task shards
    - Architecture decisions → individual ADR shards
    - Non-functional requirements → grouped shard
 
@@ -85,17 +85,16 @@ If no documents found: "No documents to shard. Run `/circle:prioritize` or `/cir
    [impact on the system]
    ```
 
-   **Story shards** → `$BASE/shards/stories/`
+   **Task shards** → `$BASE/shards/tasks/`
    ```markdown
-   # STORY-001: Implement User Login
+   # TASK-001: Implement User Login
 
-   **Type**: User Story
+   **Type**: Work Item
    **Priority**: Must Have
-   **Points**: 5
    **Dependencies**: [ADR-001, FR-1.1]
 
-   ## User Story
-   As a user, I want to log in with my credentials, so that I can access my dashboard.
+   ## Description
+   Enable users to log in with credentials to access their dashboard.
 
    ## Acceptance Criteria
    - [ ] User can enter email and password
@@ -114,7 +113,7 @@ If no documents found: "No documents to shard. Run `/circle:prioritize` or `/cir
 4. **Naming convention**: `{TYPE}-{ID}-{slug}.md`
    - `FR-1.1-user-authentication.md`
    - `ADR-001-auth-strategy.md`
-   - `STORY-001-implement-user-login.md`
+   - `TASK-001-implement-user-login.md`
 
 5. **Update session state**:
    ```json
@@ -134,11 +133,11 @@ If no documents found: "No documents to shard. Run `/circle:prioritize` or `/cir
    =================
    Requirements: 8 shards → ~/.claude/circle/projects/{project}/shards/requirements/
    Architecture: 4 shards → ~/.claude/circle/projects/{project}/shards/architecture/
-   Stories:      6 shards → ~/.claude/circle/projects/{project}/shards/stories/
+   Tasks:        6 shards → ~/.claude/circle/projects/{project}/shards/tasks/
 
    Usage:
-   /circle:impl STORY-001    ← Implements only STORY-001
-   /circle:impl STORY-002    ← Implements only STORY-002
+   /circle:impl TASK-001    ← Implements only TASK-001
+   /circle:impl TASK-002    ← Implements only TASK-002
 
    Each invocation loads only the relevant shard (~300 tokens instead of ~5000).
    ```
@@ -146,13 +145,13 @@ If no documents found: "No documents to shard. Run `/circle:prioritize` or `/cir
 ## Post-Sharding Usage
 
 ```bash
-# The Implementer works on only STORY-001
-/circle:impl STORY-001
+# The Implementer works on only TASK-001
+/circle:impl TASK-001
 
 # It will read ONLY:
-# - ~/.claude/circle/projects/{project}/shards/stories/STORY-001.md
+# - ~/.claude/circle/projects/{project}/shards/tasks/TASK-001.md
 # - Any dependencies referenced in the shard (loaded on demand)
-# - NOT: other stories, full PRD, future tasks
+# - NOT: other tasks, full PRD, future work items
 ```
 
 ## Circle Principles

@@ -138,7 +138,7 @@ PROJECT_NAME=$(basename "$PWD" | tr '[:upper:]' '[:lower:]')
 BASE=~/.claude/circle/projects/$PROJECT_NAME
 
 mkdir -p $BASE/output/{scope,arch,impl,qa,security,ux,prioritize,facilitate,docs,code-review,triage}
-mkdir -p $BASE/shards/{requirements,architecture,stories}
+mkdir -p $BASE/shards/{requirements,architecture,tasks}
 mkdir -p $BASE/workspace
 ```
 
@@ -186,7 +186,7 @@ Dependencies:
   Update all:      bash <plugin-root>/resources/scripts/update-deps.sh
 
 Available roles:
-  /circle:scope       - Scope Clarifier (requirements, user stories)
+  /circle:scope       - Scope Clarifier (requirements, work items)
   /circle:arch        - Architecture Owner (design, ADRs, trade-offs)
   /circle:impl        - Implementer (implementation, code review)
   /circle:qa          - Quality Guardian (test strategy, QA)

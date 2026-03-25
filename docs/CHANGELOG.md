@@ -1,5 +1,25 @@
 # Changelog
 
+## v1.3.0 — Holacracy Terminology Alignment
+
+**BREAKING**: Agile/Scrum terminology replaced with Holacracy-aligned vocabulary across all skills. Users with existing `shards/stories/` directories must re-run `/circle:shard` to regenerate under `shards/tasks/`.
+
+### Terminology changes
+- `STORY-xxx` → `TASK-xxx` (shard prefix)
+- `shards/stories/` → `shards/tasks/` (directory)
+- `user story` → `work item` (concept)
+- `epic` → `initiative` (grouping)
+- `story points` removed (Agile-specific metric)
+- `"As a user, I want to..."` → purpose-driven format: `"Enable {actor} to {action} for {outcome}"`
+- PRD template: `## User Stories` → `## Work Items`, `### Epic` → `### Initiative`, `US-x.x` → `WI-x.x`
+
+### Files changed
+- 11 skill files updated (shard, greenfield, validate-prd, impl, qa, tdd, init, cycle, scope, prioritize, docs)
+- `resources/guardrails.md` — upstream artifact mapping
+- `resources/templates/software/PRD.md` — PRD template
+- `resources/templates/config-example.yaml` — parallel config comments
+- `commands/circle.md` — dashboard description
+
 ## v1.2.0 — Effort Routing & Parallel Implementation
 
 ### Effort Routing
@@ -14,11 +34,11 @@ Per-role effort level configuration alongside existing model routing. Each fork-
 
 ### Worktree Parallel Implementation
 
-When stories are sharded, greenfield can implement independent stories in parallel using git worktrees. The orchestrator builds a dependency DAG from story shards, groups independent stories into execution waves, and launches up to 3 concurrent impl agents in isolated worktrees.
+When work items are sharded, greenfield can implement independent tasks in parallel using git worktrees. The orchestrator builds a dependency DAG from task shards, groups independent tasks into execution waves, and launches up to 3 concurrent impl agents in isolated worktrees.
 
-- **Dependency graph** — parses `Dependencies` from story shards, filters to story-to-story deps only
-- **Wave execution** — independent stories grouped into parallel batches (max `parallel.max_agents`)
-- **Automatic merge** — `git merge --no-ff` per completed worktree, preserving per-story commit history
+- **Dependency graph** — parses `Dependencies` from task shards, filters to task-to-task deps only
+- **Wave execution** — independent tasks grouped into parallel batches (max `parallel.max_agents`)
+- **Automatic merge** — `git merge --no-ff` per completed worktree, preserving per-task commit history
 - **Conflict handling** — merge conflicts pause the workflow with clear resolution instructions
 - **config.yaml** — `parallel.enabled` (default: true) and `parallel.max_agents` (default: 3)
 - **Graceful fallback** — no shards or parallel disabled → sequential impl as before
