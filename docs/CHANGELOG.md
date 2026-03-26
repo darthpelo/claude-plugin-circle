@@ -1,5 +1,39 @@
 # Changelog
 
+## v1.6.0 — Code Review Rework
+
+### Deep Context & Evidence-Based Findings
+
+The code-review skill now gathers full project context instead of only root CLAUDE.md, and every posted finding must cite a specific source or be discarded.
+
+- **Deep context gathering** — preflight scans `.claude/**/*.md`, nested CLAUDE.md (scoped to changed dirs), and language skill best practices via deps-manifest
+- **Evidence-based filter** — confidence threshold raised from 80 to 90; citation-required gate discards uncited findings
+- **Language skill integration** — Agent A detects project language and incorporates installed skill best practices (no third agent)
+- **Model & effort routing** — Agent A: sonnet/medium, Agent B: haiku/medium; configurable via `code_review.agent_a.model/effort` and `code_review.agent_b.model/effort` in config.yaml
+- **Security mitigations** — symlink protection (realpath + project-root check), data-fencing (`<project-context>` tags), path traversal rejection, 10KB per-file cap, 50KB total cap, dep-id character validation
+- **Output format** — `<description> — violates <source> (<link>)` with model/effort footer
+
+### Config
+
+New nested keys (old flat keys still work as fallback):
+```yaml
+code_review:
+  agent_a:
+    model: sonnet    # default
+    effort: medium   # default
+  agent_b:
+    model: haiku     # default
+    effort: medium   # default
+```
+
+### Skills Changed
+
+| Skill | Change |
+|-------|--------|
+| `code-review` | Major — deep context, evidence-based findings, model routing, security mitigations |
+
+---
+
 ## v1.5.0 — Rename Prioritizer to Refiner
 
 ### Breaking Change
