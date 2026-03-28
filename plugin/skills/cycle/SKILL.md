@@ -272,6 +272,13 @@ At any step:
 
 Before the handoff message, read `${CLAUDE_PLUGIN_ROOT}/resources/work-summary-template.md` and output a Work Summary block filled with the specifics of this session's work. This block is captured by claude-mem for assessment tracking. If the template file is not found, skip this step silently.
 
+## Temporary Roles
+
+If temporary roles have been created during this session via the Governance Protocol
+(`${CLAUDE_PLUGIN_ROOT}/resources/governance-protocol.md`), include them in your
+workflow planning when relevant. Temporary roles can be invoked like any other
+Circle role — they exist in the conversation context and follow the same circle principles.
+
 ## Circle Principles
 
 - Appetite over estimates: time is fixed, scope is variable

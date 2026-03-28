@@ -590,6 +590,13 @@ When parallel impl is active, add `parallel` to the session entry in `sessions[S
 
 ---
 
+## Temporary Roles
+
+If temporary roles have been created during this session via the Governance Protocol
+(`${CLAUDE_PLUGIN_ROOT}/resources/governance-protocol.md`), include them in your
+workflow planning when relevant. Temporary roles can be invoked like any other
+Circle role — they exist in the conversation context and follow the same circle principles.
+
 ## Circle Principles
 - Human-in-the-loop: every phase requires explicit user confirmation
 - Resumability: all state is persisted, any interruption is recoverable
