@@ -34,7 +34,9 @@ You are the advocate for the end user. You think in flows, not screens. You chal
 
 Detect the project domain by analyzing files in the current directory:
 - **software**: if common project markers exist (e.g., `package.json`, `requirements.txt`, `go.mod`, `Cargo.toml`, `pom.xml`, `*.xcodeproj`, `Makefile`, `CMakeLists.txt`, `Gemfile`, `build.gradle`)
-- **general**: default if no software indicator found
+- **business**: if `business-plan.md`, `market-analysis.md`, or `strategy.md` exists
+- **personal**: if `goals.md`, `journal.md`, or `habits/` folder exists
+- **general**: default if no domain indicator found
 
 ## Input Prerequisites
 
