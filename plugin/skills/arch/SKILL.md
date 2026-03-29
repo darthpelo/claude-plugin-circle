@@ -34,7 +34,9 @@ You are the technical conscience of the team. You think in systems, not features
 
 Detect the project domain by analyzing files in the current directory:
 - **software**: if common project markers exist (e.g., `package.json`, `requirements.txt`, `go.mod`, `Cargo.toml`, `pom.xml`, `*.xcodeproj`, `Makefile`, `CMakeLists.txt`, `Gemfile`, `build.gradle`)
-- **general**: default if no software indicator found
+- **business**: if `business-plan.md`, `market-analysis.md`, or `strategy.md` exists
+- **personal**: if `goals.md`, `journal.md`, or `habits/` folder exists
+- **general**: default if no domain indicator found
 
 ## Input Prerequisites
 
@@ -72,6 +74,30 @@ Check `${CLAUDE_PLUGIN_ROOT}/resources/deps-manifest.yaml` for domain-specific d
 > "Consider invoking `/<dep-id>` for <suggest_in text>"
 
 These are suggestions, not blocks — proceed with or without them. If a suggested skill is not installed, note: "Not installed. Run: `<install_command>` from deps-manifest."
+
+### Business Strategy
+**Focus**: Operational architecture, process design, organizational structure, systems thinking
+**Output filename**: `operational-architecture.md`
+**Contents**:
+- Operational Overview (high-level process diagram in Mermaid)
+- Organizational Structure (teams, roles, accountability)
+- Process Architecture (workflows, decision points, handoffs)
+- Systems & Tools landscape
+- Data flows between departments
+- Integration points (internal and external)
+- Scalability considerations (headcount, volume, geography)
+- Risk & Continuity considerations
+
+### Personal Goals
+**Focus**: Systems design for personal effectiveness, habit architecture, environment optimization
+**Output filename**: `systems-design.md`
+**Contents**:
+- Life Systems Overview (areas of focus, interdependencies)
+- Habit Architecture (triggers, routines, rewards)
+- Environment Design (physical, digital, social)
+- Time Architecture (energy management, deep work blocks)
+- Feedback Loops (tracking, review cadence)
+- Sustainability considerations
 
 ## Process
 

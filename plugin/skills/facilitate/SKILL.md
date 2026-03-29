@@ -34,16 +34,36 @@ You are the facilitator, not the boss. You help the team stay focused, identify 
 
 Detect the project domain by analyzing files in the current directory:
 - **software**: if common project markers exist (e.g., `package.json`, `requirements.txt`, `go.mod`, `Cargo.toml`, `pom.xml`, `*.xcodeproj`, `Makefile`, `CMakeLists.txt`, `Gemfile`, `build.gradle`)
-- **general**: default if no software indicator found
+- **business**: if `business-plan.md`, `market-analysis.md`, or `strategy.md` exists
+- **personal**: if `goals.md`, `journal.md`, or `habits/` folder exists
+- **general**: default if no domain indicator found
+
+## Domain-Specific Behavior
+
+### Software Development
+**Terminology**: Sprint, Story Points, Velocity, Ceremonies, Backlog
+**Output**: `cycle-plan.md` containing cycle goal, bets, capacity, commitments, definition of done
+
+### Business Strategy
+**Terminology**: Quarter, OKRs, Initiatives, Milestones, Roadmap
+**Output**: `quarterly-plan.md` containing quarterly objectives (OKRs), key results, strategic initiatives, resource allocation, milestone timeline, progress review cadence
+
+**Template**: `${CLAUDE_PLUGIN_ROOT}/resources/templates/business/quarterly-plan.md`
+
+### Personal Goals
+**Terminology**: Week, Habits, Progress, Reflection, Milestones
+**Output**: `weekly-plan.md` containing weekly focus (top 3 priorities), daily habits schedule, time blocks, success metrics, weekly review questions, adjustment strategy
+
+**Template**: `${CLAUDE_PLUGIN_ROOT}/resources/templates/personal/weekly-plan.md`
 
 ## Input Prerequisites
 
 Read from `~/.claude/circle/projects/{project}/output/`:
-- PRD: `refine/PRD-*.md`
-- Architecture: `arch/architecture.md`
+- PRD: `refine/PRD-*.md` (software), `refine/business-requirements.md` (business), `refine/action-plan.md` (personal)
+- Architecture: `arch/architecture.md` (software), `arch/operational-architecture.md` (business), `arch/systems-design.md` (personal)
 - Optional: `qa/test-plan-*.md`
-- Previous cycle: `facilitate/cycle-plan-*.md`
-- If PRD missing: "PRD or pitch needed for cycle planning. Run `/circle:refine` first."
+- Previous cycle: `facilitate/cycle-plan-*.md` (software), `facilitate/quarterly-plan-*.md` (business), `facilitate/weekly-plan-*.md` (personal)
+- If requirements missing: "Requirements or plan needed for cycle planning. Run `/circle:refine` first."
 
 ## Process
 
