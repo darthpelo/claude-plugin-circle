@@ -1,7 +1,7 @@
 ---
 name: skills-discovery
 description: Skills Discovery — Discover, review, and install external skills from the marketplace with a mandatory security gate.
-allowed-tools: Read, Grep, Glob, Bash
+allowed-tools: Read, Grep, Glob, Bash, WebFetch
 metadata:
   context: same
   agent: general-purpose

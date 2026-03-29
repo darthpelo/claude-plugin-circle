@@ -82,9 +82,10 @@ When the count reaches **2 or more uses**:
 
 1. **Suggest promotion**: "The temporary role <name> has been used N times this session. Would you like to make it permanent?"
 2. **If confirmed**: Generate a SKILL.md using the role template at `${CLAUDE_PLUGIN_ROOT}/resources/templates/software/role-template.md`
-   - Create directory: `skills/<name>/`
-   - Write `skills/<name>/SKILL.md` with all standard blocks (frontmatter, soul.md, domain detection, config, process, tension sensing)
-   - Use `${CLAUDE_PLUGIN_ROOT}/` for all paths (never hardcode absolute paths)
+   - Create directory: `~/.claude/circle/projects/{project}/skills/<name>/`
+   - Write `~/.claude/circle/projects/{project}/skills/<name>/SKILL.md` with all standard blocks (frontmatter, soul.md, domain detection, config, process, tension sensing)
+   - Use `${CLAUDE_PLUGIN_ROOT}/` for all resource paths (never hardcode absolute paths)
+   - Instruct the user to copy the file to `plugin/skills/<name>/` in the repo if they want to persist it in version control
    - Set `promoted: true` in the session state entry for this role
 3. **If rejected**: Do not suggest again in this session
 
