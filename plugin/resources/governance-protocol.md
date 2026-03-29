@@ -76,13 +76,16 @@ The temporary role:
 
 ## Promotion Rules
 
-Track how many times a temporary role is used in the session. When the count reaches **2 or more uses**:
+**Usage tracking**: Each time a temporary role is invoked, increment its `uses` counter in the conversation context (stored in `temporary_roles` within the session state). This count persists for the duration of the session.
+
+When the count reaches **2 or more uses**:
 
 1. **Suggest promotion**: "The temporary role <name> has been used N times this session. Would you like to make it permanent?"
 2. **If confirmed**: Generate a SKILL.md using the role template at `${CLAUDE_PLUGIN_ROOT}/resources/templates/software/role-template.md`
    - Create directory: `skills/<name>/`
    - Write `skills/<name>/SKILL.md` with all standard blocks (frontmatter, soul.md, domain detection, config, process, tension sensing)
    - Use `${CLAUDE_PLUGIN_ROOT}/` for all paths (never hardcode absolute paths)
+   - Set `promoted: true` in the session state entry for this role
 3. **If rejected**: Do not suggest again in this session
 
 ## Governance Principles
