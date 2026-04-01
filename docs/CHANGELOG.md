@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.6.3 — Governance Protocol
+
+### Dynamic Role Creation
+
+Adds a governance protocol that lets Circle roles detect structural gaps (tensions) and propose temporary roles at runtime, with human approval at every step.
+
+- **Governance protocol** — `plugin/resources/governance-protocol.md` defines tension format, existing roles reference, and proposal flow
+- **Tension sensing** — 10 role skills (`arch`, `code-review`, `docs`, `facilitate`, `impl`, `init`, `qa`, `refine`, `scope`, `security`) now detect and surface tensions during their work
+- **Domain support** — proposed roles specify their domain (`software`, `business`, `personal`, `general`)
+
 ## v1.6.2 — Code Review Foundational File Threshold
 
 - **Foundational file threshold** — findings on `soul.md`, root `CLAUDE.md`, and `deps-manifest.yaml` use a lower confidence threshold (75 vs 90) to prevent high-impact issues from being silently filtered
