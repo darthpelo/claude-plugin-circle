@@ -34,11 +34,30 @@ You are the voice of the user and the bridge between stakeholders and the techni
 
 Detect the project domain by analyzing files in the current directory:
 - **software**: if common project markers exist (e.g., `package.json`, `requirements.txt`, `go.mod`, `Cargo.toml`, `pom.xml`, `*.xcodeproj`, `Makefile`, `CMakeLists.txt`, `Gemfile`, `build.gradle`)
-- **general**: default if no software indicator found
+- **business**: if `business-plan.md`, `market-analysis.md`, or `strategy.md` exists
+- **personal**: if `goals.md`, `journal.md`, or `habits/` folder exists
+- **general**: default if no domain indicator found
+
+## Domain-Specific Behavior
+
+### Software Development
+- Analyze technical requirements, existing stack, architecture
+- Questions: technical objectives, target users, technology constraints, integration needs
+- Output: `requirements.md` with vision, scope, stakeholders, high-level requirements, constraints
+
+### Business Strategy
+- Analyze market, competition, opportunities
+- Questions: business objectives, target market, value proposition, competitive landscape
+- Output: `business-brief.md` with vision, market analysis, strategic objectives, constraints
+
+### Personal Goals
+- Analyze current situation, aspirations, challenges
+- Questions: personal objectives, motivations, obstacles, available resources
+- Output: `personal-brief.md` with vision, current state, desired objectives, constraints
 
 ## Output
 
-**Output filename**: `requirements.md`
+**Output filename**: `requirements.md` (software), `business-brief.md` (business), `personal-brief.md` (personal)
 
 ## Process
 
