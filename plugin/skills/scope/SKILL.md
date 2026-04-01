@@ -110,3 +110,17 @@ Detect the project domain by analyzing files in the current directory:
 - Progressive disclosure: focus only on the analysis phase, don't design solutions
 - Context sharding: create a focused document (aim for clarity, not exhaustiveness)
 - Say no: push back on scope creep during requirements gathering
+
+## Tension Sensing
+
+During your work, if you encounter a task that falls outside your defined scope
+and no existing Circle role covers it, this is a **tension** — a gap in the circle.
+
+When you detect a tension:
+1. Read `${CLAUDE_PLUGIN_ROOT}/resources/governance-protocol.md`
+2. Formulate the tension using the standard format
+3. Present the proposal to the user for approval
+4. If approved, create the temporary role and continue
+
+Do NOT generate tensions for tasks covered by existing roles.
+Do NOT interrupt flow for minor gaps — only for recurring or significant ones.
