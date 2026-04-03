@@ -4,8 +4,6 @@ description: Creative Problem Solver — Applies structured creative frameworks 
 allowed-tools: Read, Write, Grep, Glob, Bash, AskUserQuestion
 metadata:
   context: same
-  model: opus
-  effort: high
 ---
 
 # Creative Problem Solver

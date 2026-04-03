@@ -4,8 +4,6 @@ description: Brainstorming Facilitator — Facilitates divergent ideation sessio
 allowed-tools: Read, Write, Grep, Glob, Bash, AskUserQuestion
 metadata:
   context: same
-  model: sonnet
-  effort: medium
 ---
 
 # Brainstorming Facilitator
