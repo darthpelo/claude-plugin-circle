@@ -23,11 +23,13 @@ Domain: software | business | personal | general
 
 Before proposing a new role, verify the gap is real. These roles already exist:
 - **arch**: Architecture design, ADRs, system design
+- **brainstorm**: Divergent ideation sessions, 60+ creative techniques
 - **code-review**: Multi-agent PR review with context
 - **cycle**: Cycle planning ceremony (Shape Up)
 - **docs**: Documentation generation from templates
 - **facilitate**: Cycle planning, coordination, blockers
 - **greenfield**: Full workflow orchestration
+- **ideate**: Structured creative problem-solving frameworks
 - **impl**: Code implementation, action execution
 - **init**: Project initialization
 - **qa**: Testing strategy, quality validation
@@ -36,7 +38,6 @@ Before proposing a new role, verify the gap is real. These roles already exist:
 - **security**: Threat modeling, compliance, audits
 - **shard**: Document sharding for context management
 - **tdd**: TDD red-green-refactor enforcement
-- **track**: Work tracking outside Circle skills
 - **triage**: PR review comment handling
 - **ux**: UI/UX design, wireframes, journeys
 - **validate-prd**: PRD quality validation

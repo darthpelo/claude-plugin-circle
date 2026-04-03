@@ -1,11 +1,16 @@
 # Circle Plugin
 
-Pure Markdown plugin for Claude Code. 18 skills (9 holacracy roles + 9 utilities). No build, no tests, no CI.
+Pure Markdown plugin for Claude Code. 20 skills (11 holacracy roles + 9 utilities). No build, no tests, no CI.
 
 ## Dev
 
 ```bash
+# Local testing
 claude --plugin-dir ./plugin
+
+# Install from marketplace
+claude plugin marketplace add /path/to/claude-plugin-circle
+claude plugin install circle@circle
 ```
 
 ## Layout
@@ -18,8 +23,9 @@ plugin/resources/soul.md               # Shared principles — every role loads 
 plugin/resources/deps-manifest.yaml    # Dependency registry (source of truth)
 plugin/resources/scripts/              # install-deps.sh, update-deps.sh
 plugin/resources/templates/{docs,software,business,personal}/ # Output templates
+plugin/resources/templates/config-example.yaml              # Per-project config template
 plugin/resources/governance-protocol.md # Dynamic role creation protocol
-plugin/skills/*/SKILL.md               # 19 skills (see ls)
+plugin/skills/*/SKILL.md               # 20 skills (see ls)
 docs/                                  # CHANGELOG.md, CUSTOMIZATION.md, GETTING-STARTED.md
 ```
 
@@ -27,7 +33,7 @@ docs/                                  # CHANGELOG.md, CUSTOMIZATION.md, GETTING
 
 **Naming**: `<lowercase>` for skill names — dirs, frontmatter, output paths. `circle` as plugin namespace.
 
-**Context model**: `context: fork` for roles, `context: same` for orchestrators/interactive.
+**Context model**: `context: fork` for roles, `context: same` for orchestrators/interactive. Same-context skills omit `agent` and `model` from metadata (they inherit the session).
 
 **Zero footprint**: All outputs → `~/.claude/circle/projects/<project>/`. Never write to the repo.
 
