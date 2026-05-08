@@ -198,7 +198,8 @@ Circle never adds files to your project repository. All outputs are stored in a 
 │   ├── ux/           # UX designs
 │   ├── refine/       # PRDs
 │   ├── facilitate/   # Cycle plans
-│   └── docs/         # Generated docs
+│   ├── docs/         # Generated docs
+│   └── sessions/     # Per-greenfield-session artifacts
 ├── shards/           # Context shards
 │   ├── requirements/
 │   ├── architecture/
