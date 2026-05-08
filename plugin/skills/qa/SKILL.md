@@ -20,11 +20,11 @@ Key reminders: Data over opinions. Measure before claiming success. Speak up abo
 
 ## Model
 
-**Default model**: sonnet
+**Default model**: `claude-sonnet-4-6`
 **Override**: Set `agents.qa.model` in project `config.yaml`.
-**Rationale**: Quality validation checks against defined criteria, structured verification work.
+**Rationale**: Quality validation checks against defined criteria, structured verification work. Pinned to a specific Sonnet 4.x version for cost predictability and stable behavior across Anthropic releases.
 
-> When invoked by an orchestrator, use the Task tool with `model: "sonnet"` unless overridden by config.
+> When invoked by an orchestrator, use the Task tool with `model: "sonnet"` (alias, not full ID) unless overridden by config.
 
 ## Your Role
 
@@ -61,7 +61,7 @@ Read from `~/.claude/circle/projects/{project}/output/`:
 
 **Domain Skill Suggestions**:
 
-Check `${CLAUDE_PLUGIN_ROOT}/resources/deps-manifest.yaml` for domain-specific dependency groups that match the detected project type (e.g., `ios` group when `Package.swift` or `*.xcodeproj` exists). For each dependency in a matching group that has a `suggest_in` entry for this role (`qa`), suggest:
+Check `${CLAUDE_PLUGIN_ROOT}/resources/deps-manifest.yaml` for domain-specific dependency groups that match the detected project type. (Core currently has no domain-specific groups; companion plugins — e.g., `circle-ios` — carry their own `deps-manifest.yaml` with platform groups.) For each dependency in a matching group that has a `suggest_in` entry for this role (`qa`), suggest:
 
 > "Consider invoking `/<dep-id>` for <suggest_in text>"
 
@@ -149,7 +149,8 @@ Run when invoked with `/circle:qa lint`. Validates internal consistency of the C
    **Check 5 — Documentation Sync**
    Verify docs reflect current state:
    - `docs/GETTING-STARTED.md` circle table matches skill inventory (roles only)
-   - `docs/CUSTOMIZATION.md` domain values are only `software` or `general`
+   - `docs/CUSTOMIZATION.md` domain values are the canonical set: `software`, `business`, `personal`, `general`
+   - The dashboard command (`plugin/commands/circle.md`) uses the same 4-domain detection block as the role skills
    - `README.md` output directory tree matches `init` mkdir list
    Flag: stale doc = P1
 
@@ -252,7 +253,7 @@ Run when invoked with `/circle:qa lint`. Validates internal consistency of the C
    {Minimum coverage targets}
    ```
 
-4. **Save** to `~/.claude/circle/projects/$PROJECT_NAME/output/qa/test-plan-{date}.md`
+4. **Save** to `~/.claude/circle/projects/$PROJECT_NAME/output/qa/{plan-filename}-{date}.md` where `{plan-filename}` is `test-plan` (software), `validation-plan` (business), or `progress-plan` (personal)
 
 ### Verification Mode (after implementation)
 
@@ -356,7 +357,7 @@ Run when invoked with `/circle:qa lint`. Validates internal consistency of the C
 
 7. **Self-Verification**: Read and follow the self-verification protocol in `${CLAUDE_PLUGIN_ROOT}/resources/guardrails.md`. Upstream artifact: `scope/requirements.md` or `refine/PRD.md`.
 
-8. **Save** to `~/.claude/circle/projects/$PROJECT_NAME/output/qa/test-report-{date}.md`
+8. **Save** to `~/.claude/circle/projects/$PROJECT_NAME/output/qa/{report-filename}-{date}.md` where `{report-filename}` is `test-report` (software), `validation-report` (business), or `progress-report` (personal)
 
 9. **MCP Integration** (if available):
    - **Linear**: Link test results to issues, comment on verification outcomes
@@ -378,7 +379,6 @@ Run when invoked with `/circle:qa lint`. Validates internal consistency of the C
 - Speak up: flag risks early and honestly
 - Big picture matters: verify system coherence, not just individual feature correctness
 - Scope discipline: flag implemented features not traced to requirements
-
 
 ## Tension Sensing
 

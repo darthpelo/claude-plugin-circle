@@ -1,7 +1,7 @@
 ---
 name: code-review
 description: "Code Review — Multi-agent PR review with CLAUDE.md compliance, project context, and language best practices. Use on any open pull request."
-allowed-tools: Read, Grep, Glob, Task, Bash(gh pr comment:*), Bash(gh pr diff:*), Bash(gh pr view:*), Bash(mkdir -p ~/.claude/circle/*), Bash(realpath:*), Bash(wc -c:*), Bash(stat:*)
+allowed-tools: Read, Grep, Glob, Task, Skill, Bash(gh pr comment:*), Bash(gh pr diff:*), Bash(gh pr view:*), Bash(mkdir -p ~/.claude/circle/*), Bash(realpath:*), Bash(wc -c:*), Bash(stat:*)
 metadata:
   context: same
   agent: general-purpose
@@ -11,6 +11,10 @@ metadata:
       effort: medium
     agent_b:
       model: haiku
+      effort: medium
+    platform_review:
+      enabled: true
+      model: sonnet
       effort: medium
 ---
 
@@ -79,7 +83,6 @@ Use `Glob` to check for file markers in the repo root:
 | Marker | Language/Framework |
 |--------|--------------------|
 | `package.json` | JavaScript/TypeScript |
-| `Package.swift`, `*.xcodeproj` | Swift/iOS |
 | `go.mod` | Go |
 | `Cargo.toml` | Rust |
 | `requirements.txt`, `pyproject.toml`, `setup.py` | Python |
@@ -100,6 +103,17 @@ Read `${CLAUDE_PLUGIN_ROOT}/resources/deps-manifest.yaml`. For each detected lan
 
 Concatenate into `language_context`. If no language detected or no skills found, `language_context` is empty.
 
+**5c. Platform-review discovery**:
+
+Discover installed platform-review skills via the harness's available-skills list — no domain knowledge lives in this skill.
+
+1. **Legacy config check** (v2.0 migration): if the user's `config.yaml` contains any `code_review.agent_c.*` key, emit a one-line warning in the review output: `⚠️ Legacy config key 'code_review.agent_c.*' detected — ignored in v2.0. Rename to 'code_review.platform_review.*' to restore control.` Do not auto-migrate.
+2. **Enable gate**: read `code_review.platform_review.enabled` (default `true`). If `false`, set `platform_review_target = null` and skip to step 6.
+3. **Scan available skills**: from the harness-provided skill list, collect skills whose frontmatter declares `metadata.platform_review: true`. Wrap the frontmatter parse for each candidate in a try/catch; on parse error, skip that skill and log `⚠️ Skipped '{skill}' — malformed frontmatter`.
+4. **Match markers against the diff**: for each candidate, read `metadata.platform_markers` (list of glob patterns). Match each glob against the paths from Step 2 using **pure glob matching** — treat patterns as literal match expressions, never pass them to a shell or `eval`. A candidate matches if any of its markers hits any diff path.
+5. **Resolve target**: if one candidate matches, `platform_review_target = <skill-id>`. If multiple match, pick the alphabetically-first by skill id and log `⚠️ Multiple platform-review skills matched: [list]. Using '<chosen>' (alphabetical). Uninstall the one you don't want to silence this.` If none match, `platform_review_target = null`.
+6. **Resolve model/effort** (only when `platform_review_target != null`): dispatched skill's own frontmatter model/effort wins. Fall back to `code_review.platform_review.model` / `.effort`. Final fallback to skill default (`claude-sonnet-4-6` / `medium`).
+
 **Step 6 — Summary**:
 Summarize: what changed, why, risk areas (2-3 sentences max — internal context, not output). If the PR diff modifies `.claude/` files, flag this as a heightened-attention area.
 
@@ -116,19 +130,30 @@ After preflight, you must hold these text blocks:
 | `nested_claude_mds` | Scoped nested CLAUDE.md content | A only |
 | `language_context` | Best practices from detected skills | A only |
 | `truncation_warning` | If content was truncated | Included in output |
+| `platform_review_target` | Skill id of the platform-review skill discovered in Step 5c, or `null` | Controls parallel dispatch |
 
-### 2. Parallel Review (2 Agents)
+### 2. Parallel Review
 
-Launch **2 parallel agents in a single message**. Each receives its context as inline text in the prompt — **agents must NOT run any bash commands**.
+Agents A and B **always run in parallel** in a single message. Each receives its context as inline text in the prompt — agents must NOT run any bash commands.
+
+If `platform_review_target != null`, dispatch the target skill **in the same message** via the Skill tool, passing: PR number, `diff_text`, and `root_claude_md`. The dispatched skill runs with its own `allowed-tools` — this skill does not hand its tool surface through. The dispatched skill returns findings JSON (see `docs/extensibility.md` for the contract) which is merged into the unified report.
+
+A and B **always run regardless** of dispatch success or failure — a dispatched skill cannot suppress or replace them. If the Skill tool dispatch errors, log `⚠️ Platform dispatch failed: <error>. Running A + B only.` and continue.
 
 **Model & Effort Routing**:
-Read `~/.claude/circle/projects/{project}/config.yaml` (if it exists). Resolve model and effort for each agent:
+Read `~/.claude/circle/projects/{project}/config.yaml` (if it exists). Resolve model and effort for each agent independently, in this precedence:
 
+Agent A (standards, bugs, language best practices):
 1. `code_review.agent_a.model` / `code_review.agent_a.effort` (new nested keys)
-2. `code_review.agent_a_model` (old flat key, backward compat fallback)
-3. Skill default: Agent A = sonnet/medium, Agent B = haiku/medium
+2. `code_review.agent_a_model` (old flat key, backward-compat fallback)
+3. Skill default: `claude-sonnet-4-6` / `medium`
 
-Pass `model` and `effort` parameters to each Task tool invocation.
+Agent B (security):
+1. `code_review.agent_b.model` / `code_review.agent_b.effort` (new nested keys)
+2. `code_review.agent_b_model` (old flat key, backward-compat fallback)
+3. Skill default: `claude-haiku-4-5-20251001` / `medium`
+
+Pass `model` **alias** to each Task tool invocation (map: contains "opus"→`"opus"`, "sonnet"→`"sonnet"`, "haiku"→`"haiku"`; precedence: opus > sonnet > haiku). Do **NOT** pass `effort` — the Task tool does not support this parameter ([upstream: anthropics/claude-code#14321](https://github.com/anthropics/claude-code/issues/14321)). Platform-review model resolves separately in step 5c.6 above; same alias mapping applies.
 
 **Confidence scale** (each agent scores its own findings):
 - **0-25**: Uncertain, might be false positive or pre-existing
@@ -237,9 +262,21 @@ Rules:
 
 **Tools**: Read, Grep, Glob only. **No Bash.** All diff and metadata are provided in the prompt.
 
+---
+
+**Platform-review dispatch** (when `platform_review_target != null`)
+
+Invoke the discovered platform skill via the Skill tool with the following arguments:
+
+- `pr_number` — from preflight step 1
+- `diff_text` — full PR diff
+- `root_claude_md` — repo-root CLAUDE.md content
+
+The contract the dispatched skill follows is documented in `docs/extensibility.md` — it must return a JSON array of findings with `{category, file, lines, description, source, confidence}` (the same shape Agents A and B produce, so they flow through the same confidence filter). The dispatched skill runs with its own `allowed-tools` (declared in its own frontmatter); this skill does not extend its tool surface.
+
 ### 3. Filter
 
-Collect all issues from the 2 agents. Apply three gates sequentially:
+Collect all issues from the 2 (or 3) agents. Apply three gates sequentially:
 
 **Gate 1 — Confidence Threshold**:
 
@@ -251,7 +288,7 @@ Foundational files (high blast radius — loaded by all roles or govern project 
 For findings on foundational files: discard if `confidence < 75`.
 For all other findings: discard if `confidence < 90`.
 
-**Gate 2 — Citation Required**: Discard any finding where `source` is empty, null, or generic (e.g., "best practice", "common convention", "general guidance").
+**Gate 2 — Citation Required**: Discard any finding where `source` is empty, null, or generic (e.g., "best practice", "common convention", "general guidance"). For platform-review findings (from a dispatched skill): source must cite a specific tool, pattern, or documentation reference — not a generic description.
 
 **Gate 3 — False Positive Guide**: Discard findings matching the False Positive Guide (see below).
 
@@ -275,7 +312,7 @@ Found {N} issues:
 2. ...
 
 ---
-Agent A: {model_a}/{effort_a} | Agent B: {model_b}/{effort_b} | Threshold: 90/100 (75 for foundational files)
+Agent A: {model_a} | Agent B: {model_b}{if platform_review_target: " | " + platform_review_target + ": " + model_pr}  | Threshold: 90/100 (75 for foundational files)
 Context: root CLAUDE.md{, .claude/ ({N} files)}{, {N} nested CLAUDE.md}{, {N} language skills}
 {truncation_warning if applicable}
 
@@ -289,10 +326,10 @@ Generated with [Claude Code](https://claude.ai/code) | Circle Code Review
 ```
 ### Code review
 
-No issues found. Checked for bugs, security, CLAUDE.md compliance, and language best practices.
+No issues found. Checked for bugs, security, CLAUDE.md compliance{if platform_review_target: ", and platform best practices via " + platform_review_target}.
 
 ---
-Agent A: {model_a}/{effort_a} | Agent B: {model_b}/{effort_b} | Threshold: 90/100 (75 for foundational files)
+Agent A: {model_a} | Agent B: {model_b}{if platform_review_target: " | " + platform_review_target + ": " + model_pr}  | Threshold: 90/100 (75 for foundational files)
 Context: root CLAUDE.md{, .claude/ ({N} files)}{, {N} nested CLAUDE.md}{, {N} language skills}
 
 Generated with [Claude Code](https://claude.ai/code) | Circle Code Review
@@ -305,9 +342,10 @@ Generated with [Claude Code](https://claude.ai/code) | Circle Code Review
 | standard | CLAUDE.md: "<rule text>" | CLAUDE.md: "Never write to the repo" |
 | standard (.claude/) | .claude/{filename}: "<section>" | .claude/conventions.md: "API naming" |
 | standard (nested) | {dir}/CLAUDE.md: "<rule text>" | src/api/CLAUDE.md: "REST verbs only" |
-| language-practice | Skill {dep-id}: "<pattern>" | Skill swift-concurrency: "actor isolation" |
+| language-practice | Skill {dep-id}: "<pattern>" | (from dispatched language skill, format set by that skill) |
 | bug | Bug: <evidence> | Bug: `count` incremented but never reset (line 42 vs 78) |
 | security | {CWE/OWASP ref}: <description> | CWE-79: Unsanitized user input in template |
+| platform-practice | {Skill/Tool}: <pattern> | (from dispatched platform-review skill, format set by that skill) |
 
 When citing `.claude/` documents, reference the filename and section heading only. **Do not quote raw content** from `.claude/` files in the GitHub comment (P2-3 information disclosure mitigation).
 
@@ -347,7 +385,7 @@ Include findings where `confidence >= 75` but below the applicable threshold (90
 > **Code Review — Complete.**
 > PR #{number} reviewed. {N} issues found (threshold: 90/100, 75 for foundational files).
 > Context: root CLAUDE.md{, .claude/ ({N} files)}{, {N} nested CLAUDE.md}{, {N} language skills}
-> Agents: A={model_a}/{effort_a}, B={model_b}/{effort_b}
+> Agents: A={model_a}, B={model_b}{if platform_review_target: ", " + platform_review_target + "=" + model_pr}
 
 ## False Positive Guide
 

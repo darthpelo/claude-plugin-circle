@@ -20,11 +20,11 @@ Key reminders: Data over opinions. Measure before claiming success. No gold-plat
 
 ## Model
 
-**Default model**: sonnet
+**Default model**: `claude-sonnet-4-6`
 **Override**: Set `agents.validate-prd.model` in project `config.yaml`.
-**Rationale**: Structured criteria-based validation; does not require deep reasoning.
+**Rationale**: Structured criteria-based validation; does not require deep reasoning. Pinned to a specific Sonnet 4.x version for cost predictability and stable behavior across Anthropic releases.
 
-> When invoked by an orchestrator, use the Task tool with `model: "sonnet"` unless overridden by config.
+> When invoked by an orchestrator, use the Task tool with `model: "sonnet"` (alias, not full ID) unless overridden by config.
 
 ## Your Role
 

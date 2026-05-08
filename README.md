@@ -10,6 +10,26 @@ Circle works for everyone on the team: product people, designers, analysts, deve
 
 **New to Circle?** Start with the [Getting Started Guide](docs/GETTING-STARTED.md) — it walks you through your first conversation with no technical setup.
 
+## Contents
+
+- [Soul](#soul) — the principles every role loads
+- [The Circle](#the-circle) — the 9 holacracy roles
+- [Review](#review) — PR review and triage commands
+- [Orchestrators](#orchestrators) — multi-step workflows
+- [Utilities](#utilities) — init, validate, shard, etc.
+- [Setup](#setup) — install Circle
+- [Platform Companions](#platform-companions) — extensibility contract for platform-specific reviewers
+- [Dependencies](#dependencies) — optional MCPs and tools
+- [Project Knowledge Packs](#project-knowledge-packs) — make Circle understand your project
+- [Architecture](#architecture) — zero footprint, role isolation, quality gates, context sharding, MCP
+- [Customization](#customization) — per-project config, adding roles and templates
+- [Workflows](#workflows) — new feature, bug fix, code review
+- [Changelog](#changelog)
+
+## Soul
+
+The team principles live in [`plugin/resources/soul.md`](plugin/resources/soul.md) — every role reads them on every invocation. Growth over ego. Iteration over perfection. Impact over activity. No gold-plating. No fear-driven engineering. To understand the culture behind Circle, start there.
+
 ## The Circle
 
 | Command | Role | Accountability |
@@ -56,7 +76,7 @@ These run multi-step workflows, guiding you through each phase with decision poi
 | `/circle:tdd` | Enforces strict red-green-refactor TDD cycle. Write a failing test, make it pass, refactor. Used standalone or as sub-workflow of the Implementer |
 | `/circle:shard` | Splits large documents into smaller pieces (called "shards") so roles can work with just the part they need — reduces token usage by ~90% |
 | `/circle:skills-discovery` | Discovers, reviews, and installs external skills from the marketplace with a mandatory security gate |
-| `/circle:dashboard` | Shows project status: what phase you're in, what's been done, and what roles are available |
+| `/circle` | Shows project status: what phase you're in, what's been done, and what roles are available. Pass `detailed` for version info and dependency status. |
 
 > **Token** = the unit of text that AI models process. Fewer tokens means faster responses and lower cost.
 > **Context sharding** = breaking a large document into focused pieces so each role loads only what it needs.
@@ -80,6 +100,10 @@ Then in any project:
 /circle:greenfield        # Or run the full workflow
 ```
 
+## Platform Companions
+
+Any plugin can register as a platform-review target via the frontmatter contract in [`docs/extensibility.md`](docs/extensibility.md) — declare `metadata.platform_review: true` and a `platform_markers` glob list, and core's dispatcher picks it up on matching PRs. This fork does not bundle a platform companion; install one from any marketplace that publishes it, or build your own.
+
 ## Dependencies
 
 All dependencies are **optional** — roles work without them and adapt when tools aren't available. `/circle:init` detects what's installed and offers setup options.
@@ -91,15 +115,7 @@ All dependencies are **optional** — roles work without them and adapt when too
 | Notion | Plugin | Extras | The Documentation Steward can publish docs to Notion |
 | bmad-mcp | npm | Extras | Additional workflow tools for Greenfield orchestrator |
 
-**Domain-Specific (iOS):**
-
-| Dependency | Type | What it adds |
-|---|---|---|
-| Cupertino | Brew MCP | Apple documentation and Human Interface Guidelines |
-| SwiftUI Expert | Plugin | SwiftUI best practices and patterns |
-| Swift LSP | Plugin | Code intelligence for Swift files |
-
-Domain-specific dependencies are auto-detected by `init` based on project marker files (e.g., `Package.swift` for iOS). See `deps-manifest.yaml` for conditions.
+**Platform-specific dependencies** ship with companion plugins. Core `/circle:init` and `install-deps.sh` read only `plugin/resources/deps-manifest.yaml` — they do **not** scan companion manifests. Any plugin can register as a platform-review target via the frontmatter contract documented in [`docs/extensibility.md`](docs/extensibility.md).
 
 > **MCP** = Model Context Protocol — a way for Claude to connect to external services. Think of it as a plugin for the plugin.
 
@@ -186,7 +202,7 @@ Circle never adds files to your project repository. All outputs are stored in a 
 ├── shards/           # Context shards
 │   ├── requirements/
 │   ├── architecture/
-│   └── stories/
+│   └── tasks/
 ├── workspace/        # Temporary working files
 └── config.yaml       # Per-project overrides
 ```
@@ -226,7 +242,7 @@ Roles connect to external services through MCP (Model Context Protocol) when ava
 |---|---|---|
 | Linear | All roles | Issue tracking, cycle management |
 | claude-mem | All roles | Memory that persists across Claude Code sessions |
-| Domain-specific tools | Roles with domain detection | Platform documentation and framework APIs (e.g., Cupertino for iOS) |
+| Platform-specific tools | Companion plugins | Platform documentation and framework APIs — registered via the [extensibility contract](docs/extensibility.md) |
 
 ## Customization
 
@@ -274,10 +290,6 @@ Implementer (analyze) → Architecture Owner (review) → Implementer (fix) → 
 ```
 Implementer (implement) → Quality Guardian (test) → Code Review (multi-agent PR review) → Triage (handle feedback) → merge
 ```
-
-## Soul
-
-The team principles live in `plugin/resources/soul.md` — every role reads them on every invocation. To understand the culture behind Circle, start there.
 
 ## Changelog
 

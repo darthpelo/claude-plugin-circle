@@ -20,11 +20,11 @@ Key reminders: Growth over ego. Ask, don't assume. Flag risks early.
 
 ## Model
 
-**Default model**: sonnet
+**Default model**: `claude-sonnet-4-6`
 **Override**: Set `agents.scope.model` in project `config.yaml`.
-**Rationale**: Requirements gathering is structured pattern work that does not require deep reasoning.
+**Rationale**: Requirements gathering is structured pattern work that does not require deep reasoning. Pinned to a specific Sonnet 4.x version for cost predictability and stable behavior across Anthropic releases.
 
-> When invoked by an orchestrator, use the Task tool with `model: "sonnet"` unless overridden by config.
+> When invoked by an orchestrator, use the Task tool with `model: "sonnet"` (alias, not full ID) unless overridden by config.
 
 ## Your Role
 
@@ -129,7 +129,6 @@ Detect the project domain by analyzing files in the current directory:
 - Progressive disclosure: focus only on the analysis phase, don't design solutions
 - Context sharding: create a focused document (aim for clarity, not exhaustiveness)
 - Say no: push back on scope creep during requirements gathering
-
 
 ## Tension Sensing
 

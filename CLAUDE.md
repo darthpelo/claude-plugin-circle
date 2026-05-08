@@ -37,17 +37,26 @@ docs/                                  # CHANGELOG.md, CUSTOMIZATION.md, GETTING
 
 **Zero footprint**: All outputs → `~/.claude/circle/projects/<project>/`. Never write to the repo.
 
-**Domain-agnostic core**: Never name-drop domain-specific tools (Cupertino, SwiftUI Expert) in SKILL.md body. Domain deps live only in `deps-manifest.yaml` with `suggest_in` entries. Exception: `## MCP Integration` sections may name cross-domain tools (Linear, claude-mem).
+**Domain-agnostic core**: Core skills (in `plugin/`) MUST NOT name-drop domain-specific tools, dependencies, or skills in their body. Platform-specific skills can live in companion plugins that register via `metadata.platform_review` frontmatter and declare their own deps in the companion's own `deps-manifest.yaml`. Core dispatches to platform skills via the discovery contract in `docs/extensibility.md`. Core deps live only in `plugin/resources/deps-manifest.yaml` with `suggest_in` entries. Exceptions: (a) `## MCP Integration` sections may name cross-domain tools (Linear, claude-mem) available in all domains; (b) multi-language marker-file lists inside **Domain Detection** blocks may enumerate platform markers like `*.xcodeproj`, `Cargo.toml`, `Package.swift`, `package.json` — as long as the list spans multiple languages and is used only for detection, not for naming a companion skill/tool.
 
 **Scripts mirror manifest**: `install-deps.sh` and `update-deps.sh` have hardcoded arrays — they do NOT parse `deps-manifest.yaml`. Any dep change must update both scripts AND the manifest.
 
-**Version bump**: After feature work, update version in `plugin.json` and add a release entry to `docs/CHANGELOG.md`. After merge, sync `marketplace.json` AND Luscii/claude-marketplace. Three places must match.
+**Version bump**: After feature work, update version in `plugin.json` and add a release entry to `docs/CHANGELOG.md`. After merge, sync `marketplace.json` AND Luscii/claude-marketplace. Three places must match: `plugin/.claude-plugin/plugin.json`, `circle` entry in `marketplace.json`, and Luscii.
 
 **Workflow order**: arch → security (P0 blocks impl) → impl (simplicity assessment first) → qa (coherence check + REJECT loops to impl) → commit → push → PR → code-review. Never suggest `/circle:code-review` before a PR exists.
 
 **TDD**: On by default. `impl` uses `/circle:tdd` for red-green-refactor. `qa` verifies via commit history. Disable: `tdd.enabled: false` in config.yaml. Enforcement: `hard` (blocks) or `soft` (warns).
 
-**Model routing**: Fork-context skills specify a default model (opus/sonnet/haiku) in frontmatter `metadata.model`. Orchestrators pass the `model` parameter to Task tool. Override per-project in `config.yaml` under `agents.<name>.model`. Same-context skills inherit the session model.
+**Model routing**: Both frontmatter `metadata.model` in fork-context skills and the Task tool `model:` parameter in orchestrators use the **alias** (`opus`/`sonnet`/`haiku`). Full model IDs are not in the Task tool enum and are silently discarded. The mapping rule (substring match: contains `"opus"`→`"opus"`, `"sonnet"`→`"sonnet"`, `"haiku"`→`"haiku"`; precedence: opus > sonnet > haiku) is applied at every dispatch site. Override per-project in `config.yaml` under `agents.<name>.model` (alias preferred; full IDs also work via the mapping rule). Same-context skills inherit the session model. **Effort** is NOT supported as a Task tool parameter (upstream: [anthropics/claude-code#14321](https://github.com/anthropics/claude-code/issues/14321)); it is retained in routing tables and step banners for display only.
+
+**Cross-provider note**: family aliases (`opus`/`sonnet`/`haiku`) resolve to **different versions on different providers** — latest on Anthropic API; the previous-major on Bedrock/Vertex unless overridden via `ANTHROPIC_DEFAULT_OPUS_MODEL` (or `_SONNET_`, `_HAIKU_`). Bedrock/Vertex users should override via `agents.<name>.model` with a pinned full ID if a specific version is required.
+
+**Default models** (as of v2.2.0):
+- Opus (`claude-opus-4-6`): arch, security, impl
+- Sonnet (`claude-sonnet-4-6`): scope, refine, ux, qa, validate-prd, code-review.agent_a, code-review.platform_review
+- Haiku (`claude-haiku-4-5-20251001`): facilitate, code-review.agent_b
+
+Maintainers: monitor [Anthropic deprecation page](https://docs.claude.com/en/docs/about-claude/model-deprecations) and bump alias defaults when a model is retired. The 12 alias sites are: 9 fork-skill frontmatters + 3 entries in `plugin/skills/code-review/SKILL.md` `metadata.model_routing`. Both `plugin/skills/greenfield/SKILL.md` routing tables (Role table + Role Sequence Detail + the JSON `model_routing` example) must stay in sync — see Gotchas.
 
 **Holacracy**: Roles have purposes, not personas. Reference roles, not names. External comms use team voice.
 
@@ -55,4 +64,7 @@ docs/                                  # CHANGELOG.md, CUSTOMIZATION.md, GETTING
 
 - **Marketplace frontmatter**: Only `name`, `description`, `allowed-tools`, `compatibility`, `license`, `metadata` allowed as top-level fields. `context`/`agent` go inside `metadata:`
 - **marketplace.json vs plugin.json**: Different files, different locations (root `.claude-plugin/` vs `plugin/.claude-plugin/`), different purposes
-- **Do not neutralize**: `deps-manifest.yaml`, `init`, `triage` contain domain-specific content by design
+- **Model alias drift**: when changing a skill's `metadata.model`, also update the corresponding row in `plugin/skills/greenfield/SKILL.md` (Role table at section "Model & Effort Routing", Role Sequence Detail table, AND the `model_routing` JSON example in the session-state schema). Drift is silent at runtime (skill frontmatter wins) but breaks audit consistency and confuses contributors.
+- **Task tool model alias**: Orchestrators must pass `"opus"`, `"sonnet"`, or `"haiku"` — not full model IDs — when invoking the Task tool. Full IDs are silently discarded. The mapping rule (substring match) handles both alias and full-ID inputs at dispatch time.
+- **Effort not supported at Task tool level**: The Task tool has no `effort` parameter. Do NOT pass `effort:` to Task tool invocations. Effort values in routing tables and step banners are advisory (display only). Upstream tracking: [anthropics/claude-code#14321](https://github.com/anthropics/claude-code/issues/14321).
+- **`xhigh` effort is Opus 4.7-only**: do NOT declare `effort: xhigh` on any skill — the plugin pins Opus 4.6 (and Sonnet/Haiku versions that don't support `xhigh`). Stick to `low|medium|high`.

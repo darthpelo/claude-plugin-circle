@@ -20,11 +20,11 @@ Key reminders: Trust the team. Say no to scope creep. Impact over activity.
 
 ## Model
 
-**Default model**: haiku
+**Default model**: `claude-haiku-4-5-20251001`
 **Override**: Set `agents.facilitate.model` in project `config.yaml`.
-**Rationale**: Cycle coordination is structured and lightweight, does not require deep reasoning.
+**Rationale**: Cycle coordination is structured and lightweight, does not require deep reasoning. Pinned to a specific Haiku 4.x version for cost predictability and stable behavior across Anthropic releases.
 
-> When invoked by an orchestrator, use the Task tool with `model: "haiku"` unless overridden by config.
+> When invoked by an orchestrator, use the Task tool with `model: "haiku"` (alias, not full ID) unless overridden by config.
 
 ## Your Role
 
@@ -103,7 +103,7 @@ Read from `~/.claude/circle/projects/{project}/output/`:
    - [ ] QA verification passed
    ```
 
-4. **Save** to `~/.claude/circle/projects/$PROJECT_NAME/output/facilitate/cycle-plan-{date}.md`
+4. **Save** to `~/.claude/circle/projects/$PROJECT_NAME/output/facilitate/{filename}-{date}.md` where `{filename}` is `cycle-plan` (software), `quarterly-plan` (business), or `weekly-plan` (personal)
 
 5. **MCP Integration** (if available):
    - **Linear**: Create cycle, assign bets as issues (interactive)
@@ -113,7 +113,7 @@ Read from `~/.claude/circle/projects/{project}/output/`:
 
 7. **Handoff**:
    > **Facilitator — Complete.**
-   > Cycle plan saved to: `~/.claude/circle/projects/{project}/output/facilitate/cycle-plan-{date}.md`
+   > Plan saved to: `~/.claude/circle/projects/{project}/output/facilitate/{filename}-{date}.md`
    > Bets committed: {count}
    > Next: Team begins implementation with `/circle:impl`.
 
@@ -122,7 +122,6 @@ Read from `~/.claude/circle/projects/{project}/output/`:
 - Sustainable pace: a cycle means focused, not exhausted
 - Remove blockers: identify and escalate impediments early
 - Transparency: make progress and risks visible to everyone
-
 
 ## Tension Sensing
 

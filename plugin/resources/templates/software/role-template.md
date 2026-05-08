@@ -12,7 +12,9 @@ allowed-tools: []
 metadata:
   context: fork
   agent: general-purpose
+  # Use alias: opus, sonnet, or haiku — see CLAUDE.md "Default models".
   model: sonnet
+  effort: medium
 ---
 
 # Role

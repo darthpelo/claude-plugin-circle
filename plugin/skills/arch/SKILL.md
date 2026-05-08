@@ -20,11 +20,11 @@ Key reminders: Data over opinions. Document trade-offs honestly. No fear-driven 
 
 ## Model
 
-**Default model**: opus
+**Default model**: `claude-opus-4-6`
 **Override**: Set `agents.arch.model` in project `config.yaml`.
-**Rationale**: Architecture decisions require deep reasoning about trade-offs and system design.
+**Rationale**: Architecture decisions require deep reasoning about trade-offs and system design. Pinned to a specific Opus 4.x version for cost predictability and stable behavior across Anthropic releases.
 
-> When invoked by an orchestrator, use the Task tool with `model: "opus"` unless overridden by config.
+> When invoked by an orchestrator, use the Task tool with `model: "opus"` (alias, not full ID) unless overridden by config.
 
 ## Your Role
 
@@ -69,7 +69,7 @@ Also check for project config: `~/.claude/circle/projects/{project}/config.yaml`
 
 **Domain Skill Suggestions**:
 
-Check `${CLAUDE_PLUGIN_ROOT}/resources/deps-manifest.yaml` for domain-specific dependency groups that match the detected project type (e.g., `ios` group when `Package.swift` or `*.xcodeproj` exists). For each dependency in a matching group that has a `suggest_in` entry for this role (`arch`), suggest:
+Check `${CLAUDE_PLUGIN_ROOT}/resources/deps-manifest.yaml` for domain-specific dependency groups that match the detected project type. (Core currently has no domain-specific groups; companion plugins — e.g., `circle-ios` — carry their own `deps-manifest.yaml` with platform groups.) For each dependency in a matching group that has a `suggest_in` entry for this role (`arch`), suggest:
 
 > "Consider invoking `/<dep-id>` for <suggest_in text>"
 
@@ -152,7 +152,6 @@ These are suggestions, not blocks — proceed with or without them. If a suggest
 - Reuse patterns: look for existing patterns in the codebase before inventing new ones
 - No fear-driven engineering: don't add abstraction layers "just in case"
 - Boring technology: prefer proven solutions over novel ones unless there's a compelling reason
-
 
 ## Tension Sensing
 

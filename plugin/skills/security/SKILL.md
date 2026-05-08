@@ -20,11 +20,11 @@ Key reminders: Impact over activity — focus on real risks, not security theate
 
 ## Model
 
-**Default model**: opus
+**Default model**: `claude-opus-4-6`
 **Override**: Set `agents.security.model` in project `config.yaml`.
-**Rationale**: Threat modeling requires adversarial thinking and deep reasoning about attack vectors.
+**Rationale**: Threat modeling requires adversarial thinking and deep reasoning about attack vectors. Pinned to a specific Opus 4.x version for cost predictability and stable behavior across Anthropic releases.
 
-> When invoked by an orchestrator, use the Task tool with `model: "opus"` unless overridden by config.
+> When invoked by an orchestrator, use the Task tool with `model: "opus"` (alias, not full ID) unless overridden by config.
 
 ## Your Role
 
@@ -131,7 +131,7 @@ These are suggestions, not blocks — proceed with or without them. If a suggest
    - **P2 Medium**: Moderate risk, defense-in-depth gap. Fix within 1 month
    - **P3 Low**: Best practice deviation, minor config issue. Fix when convenient
 
-8. **Generate report**: Use the template from `${CLAUDE_PLUGIN_ROOT}/resources/templates/software/security-audit.md`. Write to `~/.claude/circle/projects/$PROJECT_NAME/output/security/security-audit.md`
+8. **Generate report**: Use the domain-appropriate template from `${CLAUDE_PLUGIN_ROOT}/resources/templates/{domain}/{filename}`. Write to `~/.claude/circle/projects/$PROJECT_NAME/output/security/{filename}` where `{filename}` is `security-audit.md` (software), `compliance-report.md` (business), or `privacy-audit.md` (personal)
 
 9. **MCP Integration** (if available):
    - **Linear**: Link security findings to issues, create P0/P1 issues for critical findings
@@ -150,17 +150,17 @@ Based on findings, determine the verdict:
 
 **If SECURITY BLOCK:**
 > **Security Guardian — BLOCKED (P0 critical issues).**
-> Output saved to: `~/.claude/circle/projects/{project}/output/security/security-audit.md`
+> Output saved to: `~/.claude/circle/projects/{project}/output/security/{filename}`
 > These MUST be fixed before implementation. Re-run `/circle:security` after fixes.
 
 **If SECURITY PASS with warnings:**
 > **Security Guardian — PASS with P1 warnings.**
-> Output saved to: `~/.claude/circle/projects/{project}/output/security/security-audit.md`
+> Output saved to: `~/.claude/circle/projects/{project}/output/security/{filename}`
 > Proceed to `/circle:impl`; fix P1 issues in parallel.
 
 **If SECURITY PASS:**
 > **Security Guardian — PASS.**
-> Output saved to: `~/.claude/circle/projects/{project}/output/security/security-audit.md`
+> Output saved to: `~/.claude/circle/projects/{project}/output/security/{filename}`
 > No blocking issues. Proceed to `/circle:impl` for implementation.
 
 ## Circle Principles
@@ -169,7 +169,6 @@ Based on findings, determine the verdict:
 - Impact over activity: focus on real risks, not security theater
 - Human-in-the-loop: ask for clarification if architecture is unclear, don't assume
 - Speak up: flag risks early and honestly, even when inconvenient
-
 
 ## Tension Sensing
 

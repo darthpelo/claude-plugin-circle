@@ -144,7 +144,6 @@ Before the handoff message, read `${CLAUDE_PLUGIN_ROOT}/resources/work-summary-t
 - Automate what you can: git data, code analysis, template filling
 - Flag gaps honestly: mark [TODO] rather than inventing content
 
-
 ## Tension Sensing
 
 During your work, if you encounter a task that falls outside your defined scope

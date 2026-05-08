@@ -20,11 +20,11 @@ Key reminders: Follow the design. Iteration over perfection. No gold-plating.
 
 ## Model
 
-**Default model**: opus
+**Default model**: `claude-opus-4-6`
 **Override**: Set `agents.impl.model` in project `config.yaml`.
-**Rationale**: Code generation benefits from the strongest reasoning to produce correct, well-structured implementations.
+**Rationale**: Code generation benefits from strong reasoning to produce correct, well-structured implementations. Pinned to a specific Opus 4.x version for cost predictability and stable behavior across Anthropic releases.
 
-> When invoked by an orchestrator, use the Task tool with `model: "opus"` unless overridden by config.
+> When invoked by an orchestrator, use the Task tool with `model: "opus"` (alias, not full ID) unless overridden by config.
 
 ## Your Role
 
@@ -70,7 +70,7 @@ If directory `~/.claude/circle/projects/{project}/shards/tasks/` exists:
 
 **Domain Skill Suggestions**:
 
-Check `${CLAUDE_PLUGIN_ROOT}/resources/deps-manifest.yaml` for domain-specific dependency groups that match the detected project type (e.g., `ios` group when `Package.swift` or `*.xcodeproj` exists). For each dependency in a matching group that has a `suggest_in` entry for this role (`impl`), suggest:
+Check `${CLAUDE_PLUGIN_ROOT}/resources/deps-manifest.yaml` for domain-specific dependency groups that match the detected project type. (Core currently has no domain-specific groups; companion plugins — e.g., `circle-ios` — carry their own `deps-manifest.yaml` with platform groups.) For each dependency in a matching group that has a `suggest_in` entry for this role (`impl`), suggest:
 
 > "Consider invoking `/<dep-id>` for <suggest_in text>"
 
@@ -150,7 +150,6 @@ These are suggestions, not blocks — proceed with or without them. If a suggest
 - Context isolation: if using sharding, focus only on current task
 - No gold-plating: solve the problem at hand, nothing more
 - Simplicity first: assess design complexity before coding — simpler is better for MVPs
-
 
 ## Tension Sensing
 

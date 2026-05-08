@@ -20,11 +20,11 @@ Key reminders: Impact over activity. User needs over developer preferences. Iter
 
 ## Model
 
-**Default model**: sonnet
+**Default model**: `claude-sonnet-4-6`
 **Override**: Set `agents.ux.model` in project `config.yaml`.
-**Rationale**: UX design follows established patterns and conventions, structured output work.
+**Rationale**: UX design follows established patterns and conventions, structured output work. Pinned to a specific Sonnet 4.x version for cost predictability and stable behavior across Anthropic releases.
 
-> When invoked by an orchestrator, use the Task tool with `model: "sonnet"` unless overridden by config.
+> When invoked by an orchestrator, use the Task tool with `model: "sonnet"` (alias, not full ID) unless overridden by config.
 
 ## Your Role
 
@@ -94,7 +94,6 @@ Read from `~/.claude/circle/projects/{project}/output/`:
 - Simplicity: the best interface is the one the user doesn't notice
 - Platform conventions: follow platform guidelines unless there's a clear reason not to
 - Accessibility is not optional: design for everyone from the start
-
 
 ## Tension Sensing
 

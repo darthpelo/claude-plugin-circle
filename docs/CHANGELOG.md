@@ -1,5 +1,24 @@
 # Changelog
 
+## Unreleased — Sync with upstream v2.2.0 (2026-05-08)
+
+Merged 40 commits from `upstream/main` (alessioroberto82/claude-plugin-circle). Multi-domain support and the brainstorm/ideate skills are preserved as the fork's differentiators. The companion-plugin pattern (`plugin-ios/`) was intentionally not adopted — only the generic platform-review extensibility contract is kept.
+
+Highlights pulled from upstream:
+
+- **Model routing fix (upstream v2.2.0)** — Task tool accepts only alias strings (`opus`/`sonnet`/`haiku`); full model IDs were silently discarded. All dispatch sites now pass aliases. Effort removed from Task tool calls (parameter not in schema; tracking [anthropics/claude-code#14321](https://github.com/anthropics/claude-code/issues/14321)).
+- **Pinned model IDs (upstream v2.1.0)** — frontmatter pins specific Claude versions (e.g., `claude-opus-4-6`, `claude-sonnet-4-6`, `claude-haiku-4-5-20251001`) for cost predictability across Anthropic releases.
+- **Platform-review extensibility contract (upstream v2.0.0)** — generic dispatch contract; any plugin can register as a platform-review target via `metadata.platform_review: true` + `platform_markers`. See [`docs/extensibility.md`](extensibility.md) and [`docs/adr/0001-platform-review-extensibility.md`](adr/0001-platform-review-extensibility.md). This fork ships no companion plugin.
+- **Foundational-file confidence threshold (upstream v1.6.2)** — code-review uses 75 (instead of 90) for high-blast-radius files (`soul.md`, root `CLAUDE.md`, `deps-manifest.yaml`).
+- **Privacy-audit template hardening** — explicit warnings against recording real passwords; reuse identified by group label, not value.
+
+Skipped (not adopted by this fork):
+
+- Upstream v1.8.0 iOS code review skill (`circle-ios` companion plugin) — this fork stays focused on multi-domain (software/business/personal).
+- Upstream `circle-ios v1.1.0` — same reason.
+
+---
+
 ## v1.8.0 — Brainstorming & Creative Problem Solving
 
 ### Brainstorming Facilitator
@@ -33,6 +52,7 @@ New role for structured creative problem-solving using convergent frameworks, in
 | Mode | Divergent | Convergent |
 | Model | sonnet | opus |
 | When | "We need ideas" | "We're stuck" |
+
 
 ### Skills Changed
 

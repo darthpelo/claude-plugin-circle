@@ -45,14 +45,16 @@ init → scope → refine → validate-prd → ux → arch → security → faci
 
 Detect the project domain by analyzing files in the current directory:
 - **software**: if common project markers exist (e.g., `package.json`, `requirements.txt`, `go.mod`, `Cargo.toml`, `pom.xml`, `*.xcodeproj`, `Makefile`, `CMakeLists.txt`, `Gemfile`, `build.gradle`)
-- **general**: default if no software indicator found
+- **business**: if `business-plan.md`, `market-analysis.md`, or `strategy.md` exists
+- **personal**: if `goals.md`, `journal.md`, or `habits/` folder exists
+- **general**: default if no domain indicator found
 
 ## Model & Effort Routing
 
-Each role runs with a recommended Claude model and effort level. The orchestrator passes both `model` and effort parameters when presenting role invocations. Users can override per-project in `config.yaml`.
+Each role runs with a recommended Claude model and effort level. The orchestrator passes the `model` **alias** (`opus`/`sonnet`/`haiku`) to the Task tool when dispatching sub-agents — full model IDs are not accepted by the Task tool schema and are silently discarded. Effort is shown in step banners for transparency but is **not** passed to the Task tool (the parameter does not exist; upstream: [anthropics/claude-code#14321](https://github.com/anthropics/claude-code/issues/14321)). Users can override per-project in `config.yaml`.
 
-| Role | Default Model | Default Effort | Rationale |
-|------|--------------|----------------|-----------|
+| Role | Model alias | Effort (advisory) | Rationale |
+|------|------------|-------------------|-----------|
 | Scope Clarifier | sonnet | medium | Structured requirements gathering |
 | Refiner | sonnet | medium | Feature prioritization |
 | Experience Designer | sonnet | medium | UX design patterns |
@@ -63,11 +65,15 @@ Each role runs with a recommended Claude model and effort level. The orchestrato
 | PRD Validator | sonnet | low | Structured criteria-based validation |
 | Quality Guardian | sonnet | medium | Criteria-based validation |
 
-**Effort levels**: `low`, `medium`, `high`, `max` — controls reasoning depth per role.
+**Model aliases**: Both frontmatter `metadata.model` and Task tool `model:` use aliases (`opus`/`sonnet`/`haiku`). Full model IDs are silently discarded by the Task tool.
 
-**Config override**: `agents.{name}.model` and `agents.{name}.effort` in `~/.claude/circle/projects/{project}/config.yaml`
+**Mapping rule** (applied at every Task tool dispatch): if model string contains `"opus"` → pass `"opus"`; contains `"sonnet"` → pass `"sonnet"`; contains `"haiku"` → pass `"haiku"`; otherwise → omit model parameter. Precedence: opus > sonnet > haiku.
 
-**Effort precedence**: config.yaml > session-state.json > skill frontmatter default
+**Effort levels**: `low`, `medium`, `high`, `max` — shown in step banners to indicate expected reasoning depth. Not passed to Task tool. Note: `xhigh` is intentionally NOT used because it is only supported on Opus 4.7, while the plugin pins Opus 4.6.
+
+**Config override**: `agents.{name}.model` (must be an alias: `opus`/`sonnet`/`haiku`) and `agents.{name}.effort` in `~/.claude/circle/projects/{project}/config.yaml`. Full model IDs in config.yaml also work (the mapping rule handles them) but aliases are preferred.
+
+**Effort precedence** (for display only): config.yaml > session-state.json > skill frontmatter default
 
 ---
 
@@ -131,7 +137,7 @@ Link a Linear issue? (paste ID like ENG-42, or press Enter to auto-generate)
 ```bash
 SESSION_ID="{the chosen session ID}"
 mkdir -p $BASE/output/sessions/$SESSION_ID/{scope,arch,impl,qa,security,ux,refine,facilitate,docs}
-mkdir -p $BASE/shards/sessions/$SESSION_ID/{requirements,architecture,stories}
+mkdir -p $BASE/shards/sessions/$SESSION_ID/{requirements,architecture,tasks}
 ```
 
 **Interactive Configuration**:
@@ -245,7 +251,7 @@ After completion, type one of:
 
 All output paths below are relative to `sessions/{SESSION_ID}/`:
 
-| Step | Role | Model | Effort | Purpose | Input | Output |
+| Step | Role | Model alias | Effort (advisory) | Purpose | Input | Output |
 |---|---|---|---|---|---|---|
 | 1 | **Scope Clarifier** | sonnet | medium | Gather requirements | User description | `scope/requirements.md` |
 | 2 | **Refiner** | sonnet | medium | Prioritize & create PRD | Requirements | `refine/PRD-{date}.md` |
@@ -338,7 +344,7 @@ Progress: [{completed}/{total}]
 Completed:
   ✓ init
   ✓ scope → sessions/{SESSION_ID}/scope/requirements.md
-  ✓ refine → sessions/{SESSION_ID}/refine/PRD.md
+  ✓ refine → sessions/{SESSION_ID}/refine/PRD-{date}.md
   → arch (current)
   ○ impl
   ○ qa
@@ -369,33 +375,47 @@ After the validate-prd step:
 ### Gate 1: Security P0 Block
 
 After the security review step:
-1. Read `$BASE/output/sessions/{SESSION_ID}/security/security-audit.md`
-2. If the document contains "P0" severity issues:
+1. Resolve the security artifact filename based on the project domain (read `domain` from the root of `$BASE/output/session-state.json`):
+   - `software` → `security-audit.md`
+   - `business` → `compliance-report.md`
+   - `personal` → `privacy-audit.md`
+   - any other / unknown → `security-audit.md` (fallback)
+
+   This must match the filename written by the `security` skill (see `security/SKILL.md` Domain-Specific Behavior).
+2. Read `$BASE/output/sessions/{SESSION_ID}/security/{filename}`
+3. If the document contains "P0" severity issues:
    ```
    SECURITY GATE FAILED
    P0 critical issues found in security audit.
    These MUST be resolved before implementation.
 
-   Review: ~/.claude/circle/projects/{project}/output/sessions/{SESSION_ID}/security/security-audit.md
+   Review: ~/.claude/circle/projects/{project}/output/sessions/{SESSION_ID}/security/{filename}
 
    Resolve the issues, then type 'next' to re-run security review.
    ```
-3. Do NOT advance to the Implementer until P0 issues are resolved
+4. Do NOT advance to the Implementer until P0 issues are resolved
 
 ### Gate 2: QA Reject Block
 
 After the Quality Guardian's final verification:
-1. Read `$BASE/output/sessions/{SESSION_ID}/qa/test-report.md`
-2. If verdict is "REJECT":
+1. Resolve the QA report filename prefix based on the project domain (read `domain` from the root of `$BASE/output/session-state.json`):
+   - `software` → `test-report`
+   - `business` → `validation-report`
+   - `personal` → `progress-report`
+   - any other / unknown → `test-report` (fallback)
+
+   This must match the prefix written by the `qa` skill (see `qa/SKILL.md` Domain-Specific Behavior). The skill writes `{prefix}-{date}.md`.
+2. Locate the most recent report under `$BASE/output/sessions/{SESSION_ID}/qa/{prefix}-*.md` (highest mtime, or fall back to lexicographic sort on `{date}` since the skill uses ISO-style date stamps).
+3. If verdict is "REJECT":
    ```
    QA GATE FAILED
    The Quality Guardian has rejected the implementation.
 
-   Review: ~/.claude/circle/projects/{project}/output/sessions/{SESSION_ID}/qa/test-report.md
+   Review: ~/.claude/circle/projects/{project}/output/sessions/{SESSION_ID}/qa/{report-filename}
 
    Fix the issues with /circle:impl, then re-run QA.
    ```
-3. Loop back to Implementer step
+4. Loop back to Implementer step
 
 ### Gate 3: Completeness Check
 
@@ -522,7 +542,7 @@ When either condition fails, fall back to sequential impl (current behavior, no 
    a. Launch `min(wave_size, parallel.max_agents)` Task agents in a single message:
       - Each with `isolation: "worktree"`
       - Each with prompt: `/circle:impl TASK-xxx`
-      - Each with `model` from model_routing and effort from effort_routing
+      - Each with `model` alias from model_routing (map: contains "opus"→"opus", "sonnet"→"sonnet", "haiku"→"haiku"; unrecognised → omit). Do NOT pass effort to Task tool.
    b. Wait for all agents in the wave to complete
    c. For each completed agent, merge into the feature branch:
       ```
@@ -587,7 +607,7 @@ When parallel impl is active, add `parallel` to the session entry in `sessions[S
 | Merge conflict | Pause workflow, show conflict files, wait for user resolution |
 | Agent failure | Log failure, continue other agents in wave, report at wave end |
 | All agents in wave fail | Pause workflow, suggest manual intervention |
-| Invalid effort value in config | Warn, fall back to skill frontmatter default |
+| Invalid effort value in config | Warn, fall back to skill frontmatter default (effort is advisory; not passed to Task tool) |
 
 ---
 
