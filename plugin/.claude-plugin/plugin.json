@@ -1,6 +1,6 @@
 {
   "name": "circle",
-  "version": "1.8.0",
+  "version": "2.2.0",
   "description": "Holacracy-based development workflow with distributed roles, quality gates, Shape Up planning, and multi-domain support (software, business, personal)",
   "author": {
     "name": "Alessio Roberto",

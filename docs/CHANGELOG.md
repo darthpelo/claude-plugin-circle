@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased — Sync with upstream v2.2.0 (2026-05-08)
+## v2.2.0 — Sync with upstream v2.2.0 (2026-05-08)
 
 Merged 40 commits from `upstream/main` (alessioroberto82/claude-plugin-circle). Multi-domain support and the brainstorm/ideate skills are preserved as the fork's differentiators. The companion-plugin pattern (`plugin-ios/`) was intentionally not adopted — only the generic platform-review extensibility contract is kept.
 
